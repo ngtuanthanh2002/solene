@@ -1,0 +1,26 @@
+---
+/** Ảnh sản phẩm/biên tập tỉ lệ 4:5 với srcset 400/800/1200 */
+import { imageSrcset, imageUrl } from '../lib/catalog';
+interface Props {
+  k: string;
+  alt: string;
+  sizes?: string;
+  class?: string;
+  eager?: boolean;
+  priority?: boolean;
+  fade?: boolean;
+}
+const { k, alt, sizes = '(min-width: 1200px) 25vw, (min-width: 768px) 33vw, 50vw', class: cls = '', eager = false, priority = false, fade = true } = Astro.props;
+---
+<img
+  src={imageUrl(k, 800)}
+  srcset={imageSrcset(k)}
+  sizes={sizes}
+  width="800"
+  height="1000"
+  alt={alt}
+  class:list={[cls, { 'img-fade': fade && !eager }]}
+  loading={eager ? 'eager' : 'lazy'}
+  decoding="async"
+  fetchpriority={priority ? 'high' : undefined}
+/>

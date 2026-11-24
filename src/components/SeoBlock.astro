@@ -1,0 +1,28 @@
+---
+interface Props { heading: string; paragraphs: string[]; faq?: { q: string; a: string }[] }
+const { heading, paragraphs, faq } = Astro.props;
+---
+<section class="seo-block section--tight section--cream">
+  <div class="container--narrow">
+    <h2>{heading}</h2>
+    {paragraphs.map((p) => <p>{p}</p>)}
+    {faq && faq.length > 0 && (
+      <div class="accordion seo-block__faq">
+        <h3>Câu hỏi thường gặp</h3>
+        {faq.map((f) => (
+          <details>
+            <summary>{f.q}<span class="plus" aria-hidden="true"></span></summary>
+            <div class="acc-body"><p>{f.a}</p></div>
+          </details>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+<style is:global>
+  .seo-block h2 { font-size: var(--fs-3); margin-bottom: 1rem; }
+  .seo-block p { color: var(--c-ink-2); }
+  .seo-block__faq { margin-top: 2.4rem; }
+  .seo-block__faq h3 { font-size: 1.25rem; margin-bottom: 0.6rem; }
+  .seo-block__faq summary { text-transform: none; letter-spacing: 0; font-size: 1rem; font-weight: 400; font-family: var(--ff-serif); }
+</style>

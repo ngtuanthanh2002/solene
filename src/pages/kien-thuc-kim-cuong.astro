@@ -1,0 +1,244 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import RingIcon from '../components/RingIcon.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SHAPES } from '../lib/catalog';
+import { breadcrumbLd } from '../lib/seo';
+import { SITE } from '../config';
+
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Kim cương', href: '/kim-cuong/' }, { label: 'Cẩm nang 4C' }];
+const colors = [
+  { g: 'D', c: '#ffffff' }, { g: 'E', c: '#fefefd' }, { g: 'F', c: '#fdfdfa' }, { g: 'G', c: '#fcfbf3' }, { g: 'H', c: '#fbf8ea' }, { g: 'I', c: '#faf5e0' },
+  { g: 'J', c: '#f8f1d4' }, { g: 'K', c: '#f6ecc6' }, { g: 'L', c: '#f4e7b8' }, { g: 'M', c: '#f1e0a6' }, { g: 'N–R', c: '#eed68f' }, { g: 'S–Z', c: '#e9ca74' },
+];
+const clarity = [
+  { g: 'FL', n: 0, d: 'Hoàn hảo, không tì vết dưới kính 10x' }, { g: 'IF', n: 0, d: 'Không tạp chất bên trong' },
+  { g: 'VVS1', n: 1, d: 'Tạp chất cực nhỏ, rất khó thấy' }, { g: 'VVS2', n: 2, d: 'Tạp chất cực nhỏ' },
+  { g: 'VS1', n: 3, d: 'Tạp chất rất nhỏ — lựa chọn tối ưu' }, { g: 'VS2', n: 4, d: 'Tạp chất nhỏ, sạch dưới mắt thường' },
+  { g: 'SI1', n: 6, d: 'Tạp chất thấy dưới kính 10x' }, { g: 'SI2', n: 8, d: 'Có thể thấy bằng mắt thường' }, { g: 'I1–I3', n: 12, d: 'Tạp chất rõ, ảnh hưởng độ sáng' },
+];
+const ly = [3.6, 4.5, 5.0, 5.4, 6.0, 6.3, 6.8, 7.2, 8.1, 9.0].map((mm) => ({ mm, ct: Math.round((mm / 6.5) ** 3 * 100) / 100 }));
+const SHAPE_DESC: Record<string, string> = {
+  round: 'Giác cắt 57–58 mặt, lấp lánh nhất và kinh điển nhất — chiếm hơn 70% nhẫn cầu hôn.',
+  heart: 'Biểu tượng tình yêu, cần chế tác chuẩn để hai thùy cân đối. Đẹp nhất từ 0.5ct.',
+  pear: 'Giọt lệ thanh lịch, giúp ngón tay trông thon dài; nên chọn chấu V bảo vệ mũi nhọn.',
+  princess: 'Vuông vức, hiện đại, nhiều lửa — giá mềm hơn tròn cùng trọng lượng.',
+  emerald: 'Giác bậc thang tạo những mặt gương sang trọng; ưu tiên độ tinh khiết VS1 trở lên.',
+  oval: 'Dáng bầu dục trông lớn hơn tròn cùng carat, mềm mại và thanh lịch.',
+  cushion: 'Vuông bo góc kiểu cổ điển, ánh lửa ấm áp, rất hợp thiết kế Halo.',
+};
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'Article', headline: 'Cẩm nang kim cương 4C: Cut, Color, Clarity, Carat',
+  description: 'Hướng dẫn chọn kim cương theo tiêu chuẩn 4C của GIA, quy đổi ly – carat và cách đọc giấy kiểm định.',
+  image: new URL('/images/og/dia-tweezers.jpg', Astro.site!).href, inLanguage: 'vi-VN', datePublished: '2026-01-15', dateModified: '2026-11-01',
+  author: { '@type': 'Organization', name: SITE.legalName }, publisher: { '@type': 'Organization', name: SITE.legalName, logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', Astro.site!).href } },
+};
+---
+<Base title="Cẩm nang kim cương 4C — cách chọn kim cương chuẩn GIA" description="Hiểu đúng 4C của kim cương: giác cắt (Cut), nước màu (Color), độ tinh khiết (Clarity), trọng lượng (Carat). Bảng quy đổi ly – carat, cách đọc giấy GIA và chọn dáng viên phù hợp." image="/images/og/dia-tweezers.jpg" ogType="article" jsonld={[articleLd, breadcrumbLd(crumbs, Astro.site!)]}>
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+  <header class="page-title">
+    <p class="eyebrow">Diamond Guide</p>
+    <h1>Cẩm nang <em>kim cương 4C</em></h1>
+    <p>Bốn tiêu chuẩn quốc tế do GIA thiết lập giúp bạn hiểu — và chọn đúng — viên kim cương cho khoảnh khắc quan trọng nhất.</p>
+    <nav class="chips fourc-nav" aria-label="Mục lục">
+      <a class="chip" href="#cut">Cut</a><a class="chip" href="#color">Color</a><a class="chip" href="#clarity">Clarity</a><a class="chip" href="#carat">Carat</a><a class="chip" href="#gia">Giấy GIA</a><a class="chip" href="#dang-vien">Dáng viên</a>
+    </nav>
+  </header>
+
+  <article class="guide">
+    <!-- CUT -->
+    <section class="guide__sec container" id="cut">
+      <div class="guide__text" data-reveal>
+        <p class="guide__n">01</p>
+        <h2>Cut — <em>giác cắt</em></h2>
+        <p class="lead">Giác cắt là yếu tố quan trọng nhất, quyết định viên kim cương “bắt sáng” đến đâu. Một viên cắt chuẩn phản xạ ánh sáng đi vào trở lại qua mặt trên, tạo độ sáng (brilliance), ánh lửa (fire) và độ lấp lánh (scintillation).</p>
+        <p>GIA xếp hạng giác cắt từ <b>Excellent</b>, Very Good, Good, Fair đến Poor. Solène chỉ chọn kim cương tròn đạt <b>3EX</b> — Excellent cho cả giác cắt, độ đánh bóng và độ đối xứng.</p>
+      </div>
+      <div class="cut-viz" data-reveal style="--d:.1s">
+        {[{ t: 'Quá nông', pd: 26, ok: false, exit: 'bottom' }, { t: 'Lý tưởng', pd: 44, ok: true, exit: 'top' }, { t: 'Quá sâu', pd: 62, ok: false, exit: 'side' }].map((v) => (
+          <figure class:list={['cut-viz__item', { 'is-ideal': v.ok }]}>
+            <svg viewBox="0 0 120 110" aria-hidden="true">
+              <path d={`M32 20 H88 L108 34 L60 ${34 + v.pd} L12 34 Z`} fill="#f4f7fa" stroke="#8fa1b3" stroke-width="1" />
+              <path d={`M12 34 H108 M32 20 L44 34 L60 ${34 + v.pd} M88 20 L76 34 L60 ${34 + v.pd}`} fill="none" stroke="#b5c3d0" stroke-width=".7" />
+              {v.exit === 'top' && <path d="M46 2 L46 22 L52 58 L72 46 L74 22 L74 2" fill="none" stroke="#9c8462" stroke-width="1.6" stroke-linejoin="round" />}
+              {v.exit === 'bottom' && <path d="M46 2 L46 22 L54 52 L70 82" fill="none" stroke="#9c8462" stroke-width="1.6" stroke-linejoin="round" />}
+              {v.exit === 'side' && <path d="M46 2 L46 22 L54 70 L86 60 L116 66" fill="none" stroke="#9c8462" stroke-width="1.6" stroke-linejoin="round" />}
+            </svg>
+            <figcaption><b>{v.t}</b><span>{v.ok ? 'Ánh sáng phản xạ trở lại mắt' : v.exit === 'bottom' ? 'Ánh sáng thoát ra đáy' : 'Ánh sáng thoát ra cạnh'}</span></figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <!-- COLOR -->
+    <section class="guide__sec guide__sec--alt" id="color">
+      <div class="container">
+        <div class="guide__text guide__text--wide" data-reveal>
+          <p class="guide__n">02</p>
+          <h2>Color — <em>nước màu</em></h2>
+          <p class="lead">Kim cương trắng được xếp từ D (hoàn toàn không màu) đến Z (vàng nhạt). Càng ít màu, kim cương càng hiếm và ánh sáng đi qua càng tinh khiết.</p>
+        </div>
+        <div class="color-scale" data-reveal>
+          {colors.map((c, i) => (
+            <div class="color-scale__item">
+              <svg viewBox="0 0 40 36" aria-hidden="true"><path d="M8 4h24l6 8-18 21L2 12l6-8Zm-6 8h36M14 4l-3 8 9 21 9-21-3-8" fill={c.c} stroke="#9aa9b7" stroke-width=".8" stroke-linejoin="round" /></svg>
+              <b>{c.g}</b>
+              {i === 0 && <span>Không màu</span>}{i === 3 && <span>Gần như không màu</span>}{i === 7 && <span>Vàng rất nhạt</span>}{i === 10 && <span>Vàng nhạt</span>}
+            </div>
+          ))}
+        </div>
+        <p class="small muted center" style="margin-top:1.4rem">Gợi ý của Solène: <b>F–G</b> cho vàng trắng & bạch kim, <b>H–I</b> vẫn rất đẹp trên vàng vàng hoặc vàng hồng.</p>
+      </div>
+    </section>
+
+    <!-- CLARITY -->
+    <section class="guide__sec container" id="clarity">
+      <div class="guide__text" data-reveal>
+        <p class="guide__n">03</p>
+        <h2>Clarity — <em>độ tinh khiết</em></h2>
+        <p class="lead">Hầu hết kim cương có những dấu vết tự nhiên bên trong (tạp chất) hoặc trên bề mặt. Độ tinh khiết đánh giá số lượng, kích thước và vị trí của chúng dưới kính phóng đại 10 lần.</p>
+        <p>Lựa chọn tối ưu giữa vẻ đẹp và ngân sách là <b>VS1–VS2</b>: tạp chất không thể nhìn thấy bằng mắt thường.</p>
+      </div>
+      <ol class="clarity" role="list" data-reveal style="--d:.1s">
+        {clarity.map((c) => (
+          <li>
+            <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#f4f7fa" stroke="#9aa9b7" stroke-width=".8" /><path d="M20 3 27 13 37 20 27 27 20 37 13 27 3 20 13 13Z" fill="none" stroke="#c9d4de" stroke-width=".6" />
+              {Array.from({ length: c.n }, (_, k) => <circle cx={12 + ((k * 7) % 17)} cy={13 + ((k * 11) % 15)} r={0.8 + (k % 3) * 0.35} fill="#5d6b78" opacity=".75" />)}
+            </svg>
+            <b>{c.g}</b><span>{c.d}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- CARAT -->
+    <section class="guide__sec guide__sec--alt" id="carat">
+      <div class="container carat-sec">
+        <div class="guide__text" data-reveal>
+          <p class="guide__n">04</p>
+          <h2>Carat — <em>trọng lượng</em> &amp; kích thước “ly”</h2>
+          <p class="lead">1 carat = 0,2 gram. Tại Việt Nam, kim cương tròn thường được gọi theo đường kính “ly” (mm). Kéo thanh trượt để xem kích thước tương ứng.</p>
+          <div class="carat-tool" data-carat-tool>
+            <div class="carat-tool__stage"><span class="carat-tool__dia" data-ct-dia></span></div>
+            <input type="range" min="0.25" max="3" step="0.05" value="1" aria-label="Trọng lượng carat" data-ct-input />
+            <p class="carat-tool__out" data-ct-out><b>1.00 ct</b> ≈ 6.5 ly</p>
+          </div>
+        </div>
+        <div class="table-wrap" data-reveal style="--d:.1s">
+          <table class="size-table">
+            <thead><tr><th scope="col">Kích thước (ly)</th><th scope="col">Trọng lượng (≈ ct)</th><th scope="col">Gợi ý</th></tr></thead>
+            <tbody>
+              {ly.map((r) => <tr><th scope="row">{r.mm.toFixed(1)} ly</th><td>{r.ct.toFixed(2)} ct</td><td class="small muted">{r.mm <= 4.5 ? 'Thanh mảnh, đeo hằng ngày' : r.mm <= 5.4 ? 'Phổ biến nhất cho nhẫn cầu hôn' : r.mm <= 7.2 ? 'Nổi bật, sang trọng' : 'Tuyên ngôn đẳng cấp'}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- GIA -->
+    <section class="guide__sec container gia" id="gia">
+      <div class="gia__img ratio ratio--45" data-reveal><Img k="ed-jeweler-loupe" alt="Chuyên viên giám định kim cương bằng kính lúp" sizes="(min-width: 900px) 36vw, 90vw" /></div>
+      <div class="guide__text" data-reveal style="--d:.1s">
+        <p class="guide__n">GIA</p>
+        <h2>Đọc hiểu <em>giấy kiểm định GIA</em></h2>
+        <p class="lead">Viện Ngọc học Hoa Kỳ (GIA) là đơn vị đặt ra tiêu chuẩn 4C và được tin cậy nhất thế giới. Mỗi viên chủ từ 0.3ct tại Solène đều đi kèm giấy GIA bản gốc.</p>
+        <ul class="checks" role="list">
+          <li><Icon name="check" />Mã số báo cáo — trùng khớp với số khắc laser trên gờ viên</li>
+          <li><Icon name="check" />Kích thước, trọng lượng carat chính xác tới 0.01ct</li>
+          <li><Icon name="check" />Đánh giá Color, Clarity, Cut, Polish, Symmetry, Fluorescence</li>
+          <li><Icon name="check" />Sơ đồ vị trí tạp chất (với viên từ 1ct)</li>
+        </ul>
+        <p class="small muted">Bạn có thể tra cứu mã báo cáo trực tiếp trên website của GIA (Report Check).</p>
+      </div>
+    </section>
+
+    <!-- SHAPES -->
+    <section class="guide__sec guide__sec--alt" id="dang-vien">
+      <div class="container">
+        <div class="section-head section-head--center" data-reveal><p class="eyebrow">Diamond Shapes</p><h2>Chọn <em>dáng viên</em> phù hợp</h2></div>
+        <div class="shapes-grid" data-stagger="0.06">
+          {SHAPES.map((s) => (
+            <a class="shape-card" href={`/kim-cuong/?vien-chu=${s.key}`} data-reveal>
+              <span class="shape-card__ico"><RingIcon shape={s.key} strokeWidth={1.6} /></span>
+              <b>{s.label} <span class="muted">· {s.vi}</span></b>
+              <p>{SHAPE_DESC[s.key]}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section center">
+      <div class="container--narrow" data-reveal>
+        <h2>Sẵn sàng chọn <em>viên kim cương của bạn?</em></h2>
+        <p class="lead">Xem kim cương GIA 3EX hoặc tự thiết kế nhẫn với viên chủ theo ý muốn.</p>
+        <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.6rem">
+          <a class="btn" href="/kim-cuong/">Xem kim cương viên</a>
+          <a class="btn btn--outline" href="/thiet-ke-nhan/"><Icon name="sparkle" />Thiết kế nhẫn</a>
+        </div>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('[data-ct-input]');
+  const dia = document.querySelector<HTMLElement>('[data-ct-dia]');
+  const out = document.querySelector<HTMLElement>('[data-ct-out]');
+  const draw = () => {
+    if (!input || !dia || !out) return;
+    const ct = Number(input.value);
+    const mm = 6.5 * Math.cbrt(ct);
+    dia.style.width = dia.style.height = `${mm * 14}px`;
+    out.innerHTML = `<b>${ct.toFixed(2)} ct</b> ≈ ${mm.toFixed(1)} ly`;
+  };
+  input?.addEventListener('input', draw);
+  draw();
+</script>
+
+<style is:global>
+  .fourc-nav { justify-content: center; margin-top: 1.8rem; }
+  .guide__sec { padding-block: clamp(3.5rem, 7vw, 6.5rem); display: grid; gap: 2.5rem; align-items: center; }
+  .guide__sec.container { grid-template-columns: 1fr; }
+  @media (min-width: 960px) { .guide__sec.container { grid-template-columns: 1fr 1fr; gap: 5rem; } }
+  .guide__sec--alt { background: var(--c-bg-2); }
+  .guide__n { font-family: var(--ff-serif); font-size: 1rem; color: var(--c-gold-dark); letter-spacing: 0.14em; margin: 0 0 0.4rem; }
+  .guide__text h2 { font-size: var(--fs-2); }
+  .guide__text--wide { max-width: 720px; margin: 0 auto 2.4rem; text-align: center; }
+  .cut-viz { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .cut-viz__item { display: grid; gap: 0.6rem; justify-items: center; text-align: center; padding: 1.2rem 0.6rem; border: 1px solid var(--c-line); background: #fff; }
+  .cut-viz__item.is-ideal { border-color: var(--c-gold); box-shadow: 0 0 0 1px var(--c-gold); }
+  .cut-viz__item svg { width: 100%; max-width: 150px; }
+  .cut-viz__item b { font-family: var(--ff-serif); font-weight: 400; font-size: 1.1rem; display: block; }
+  .cut-viz__item span { font-size: var(--fs-xs); color: var(--c-muted); }
+  .color-scale { display: grid; grid-template-columns: repeat(12, 1fr); gap: 0.3rem; }
+  @media (max-width: 760px) { .color-scale { grid-template-columns: repeat(6, 1fr); row-gap: 1.4rem; } }
+  .color-scale__item { display: grid; justify-items: center; gap: 0.3rem; text-align: center; position: relative; padding-bottom: 1.6rem; }
+  .color-scale__item svg { width: 100%; max-width: 52px; }
+  .color-scale__item b { font-family: var(--ff-serif); font-weight: 400; font-size: 1.15rem; }
+  .color-scale__item span { position: absolute; bottom: 0; left: 0; white-space: nowrap; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-gold-dark); }
+  .clarity { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--c-line); border: 1px solid var(--c-line); }
+  .clarity li { background: var(--c-bg); padding: 1rem 0.8rem; display: grid; justify-items: center; text-align: center; gap: 0.3rem; }
+  .clarity svg { width: 44px; height: 44px; }
+  .clarity b { font-family: var(--ff-serif); font-weight: 400; font-size: 1.15rem; }
+  .clarity span { font-size: var(--fs-xs); color: var(--c-muted); line-height: 1.4; }
+  .carat-sec { display: grid; gap: 2.5rem; align-items: center; }
+  @media (min-width: 960px) { .carat-sec { grid-template-columns: 1fr 1fr; gap: 5rem; } }
+  .carat-tool { margin-top: 1.6rem; display: grid; gap: 1rem; }
+  .carat-tool__stage { height: 160px; display: grid; place-items: center; background: #fff; border: 1px solid var(--c-line); }
+  .carat-tool__dia { border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #e8eef4 45%, #b9c8d6 100%); box-shadow: 0 8px 18px -8px rgba(60, 80, 100, 0.5), inset 0 0 0 1px rgba(120, 140, 160, 0.4); transition: width 0.15s, height 0.15s; }
+  .carat-tool input { accent-color: var(--c-gold-dark); width: 100%; }
+  .carat-tool__out { margin: 0; text-align: center; color: var(--c-muted); }
+  .carat-tool__out b { font-family: var(--ff-serif); font-size: 1.6rem; font-weight: 400; color: var(--c-ink); }
+  .checks { list-style: none; display: grid; gap: 0.8rem; margin: 1.4rem 0; }
+  .checks li { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.95rem; }
+  .checks svg { width: 18px; height: 18px; color: var(--c-gold-dark); flex: none; margin-top: 3px; }
+  .shapes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+  .shape-card { display: grid; gap: 0.5rem; padding: 1.6rem 1.4rem; background: var(--c-bg); border: 1px solid var(--c-line); transition: border-color 0.3s, transform 0.5s var(--ease-out); }
+  .shape-card:hover { border-color: var(--c-gold); transform: translateY(-3px); }
+  .shape-card__ico { width: 54px; height: 54px; color: var(--c-gold-dark); margin-bottom: 0.4rem; }
+  .shape-card b { font-family: var(--ff-serif); font-weight: 400; font-size: 1.25rem; }
+  .shape-card p { margin: 0; font-size: var(--fs-sm); color: var(--c-muted); }
+</style>

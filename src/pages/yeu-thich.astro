@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Yêu thích' }];
+---
+<Base title="Danh sách yêu thích" description="Những thiết kế bạn đã lưu tại Solène." noindex>
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+  <header class="page-title"><p class="eyebrow">Wishlist</p><h1>Danh sách <em>yêu thích</em></h1><p data-wl-sub>Những thiết kế bạn đã lưu lại.</p></header>
+  <section class="container" style="padding-bottom:var(--section)">
+    <div class="wl-actions" data-wl-actions hidden>
+      <button type="button" class="btn btn--outline btn--sm" data-wl-share><Icon name="chat" />Chia sẻ danh sách</button>
+      <button type="button" class="link-inline small" data-wl-clear>Xóa tất cả</button>
+    </div>
+    <div class="product-grid product-grid--4" data-wl-grid></div>
+    <div class="empty-state" data-wl-empty hidden>
+      <Icon name="heart" /><h2>Chưa có thiết kế nào</h2>
+      <p class="muted">Nhấn biểu tượng trái tim trên sản phẩm để lưu lại và so sánh sau.</p>
+      <a class="btn" href="/cua-hang/?sap-xep=ban-chay">Khám phá thiết kế bán chạy</a>
+    </div>
+  </section>
+</Base>
+<script>
+  import { loadProducts } from '../scripts/catalog-client';
+  import { productCardHTML } from '../lib/card';
+  import { getWishlist, on, write, read } from '../scripts/store';
+  import { syncWishButtons } from '../scripts/cart-ui';
+  import { markLoadedImages, qs, toast } from '../scripts/ui';
+
+  const grid = qs('[data-wl-grid]')!;
+  // Liên kết chia sẻ: /yeu-thich/?ds=id1,id2
+  const shared = new URLSearchParams(location.search).get('ds');
+  const render = async () => {
+    const ids = shared ? shared.split(',') : getWishlist();
+    qs('[data-wl-empty]')!.hidden = !!ids.length;
+    qs('[data-wl-actions]')!.hidden = !ids.length || !!shared;
+    if (shared) qs('[data-wl-sub]')!.textContent = 'Danh sách yêu thích được chia sẻ với bạn.';
+    if (!ids.length) { grid.innerHTML = ''; return; }
+    const all = await loadProducts();
+    grid.innerHTML = ids.map((id) => all.find((p) => p.id === id)).filter(Boolean).map((p, i) => productCardHTML(p!, { index: i })).join('');
+    syncWishButtons(grid);
+    markLoadedImages(grid);
+  };
+  render();
+  if (!shared) on('wishlist:change', render);
+  qs('[data-wl-clear]')?.addEventListener('click', () => {
+    const prev = read<string[]>('wishlist', []);
+    write('wishlist', []);
+    window.dispatchEvent(new CustomEvent('wishlist:change'));
+    toast({ message: 'Đã xóa danh sách yêu thích.', icon: 'heart', action: { label: 'Hoàn tác', onClick: () => { write('wishlist', prev); window.dispatchEvent(new CustomEvent('wishlist:change')); } } });
+  });
+  qs('[data-wl-share]')?.addEventListener('click', async () => {
+    const url = `${location.origin}/yeu-thich/?ds=${getWishlist().join(',')}`;
+    try { await navigator.clipboard.writeText(url); toast({ message: 'Đã sao chép liên kết — gửi cho người ấy một “gợi ý” nhé!', icon: 'heart' }); }
+    catch { window.prompt('Sao chép liên kết:', url); }
+  });
+</script>
+<style is:global>
+  .wl-actions { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--c-line); }
+</style>

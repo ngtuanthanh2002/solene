@@ -1,0 +1,10 @@
+---
+import { ringSVG, shapeIconSVG } from '../lib/ring-svg';
+import type { RingStyle, Shape } from '../lib/catalog';
+interface Props { style?: RingStyle; shape?: Shape; strokeWidth?: number; title?: string; class?: string }
+const { style, shape = 'round', strokeWidth, title, class: cls = '' } = Astro.props;
+const svg = style
+  ? ringSVG({ style, shape, mode: 'line', strokeWidth: strokeWidth ?? 3.2, title, className: cls })
+  : shapeIconSVG(shape, { strokeWidth: strokeWidth ?? 2.4, title, className: cls });
+---
+<Fragment set:html={svg} />

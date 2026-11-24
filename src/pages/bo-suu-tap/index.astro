@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import Img from '../../components/Img.astro';
+import Icon from '../../components/Icon.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { COLLECTIONS } from '../../data/collections';
+import { byCollection } from '../../data/products';
+import { breadcrumbLd } from '../../lib/seo';
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Bộ sưu tập' }];
+---
+<Base title="Bộ sưu tập trang sức" description="Khám phá 7 bộ sưu tập của Solène: Silk Veil, Lotus Bloom, Starlit Vow, Petite Lumière, Hand in Hand, Eternal Grace và Ma Chérie — mỗi bộ sưu tập một câu chuyện tình yêu." jsonld={breadcrumbLd(crumbs, Astro.site!)}>
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+  <header class="page-title">
+    <p class="eyebrow">Collections</p>
+    <h1>Bộ sưu tập <em>Solène</em></h1>
+    <p>Mỗi bộ sưu tập bắt đầu từ một khoảnh khắc — tà voan trong nắng sớm, đóa sen đầu hạ, bầu trời đêm đầy sao.</p>
+  </header>
+  <div class="container colls">
+    {COLLECTIONS.map((c, i) => (
+      <article class:list={['coll', { 'coll--rev': i % 2 === 1 }]} data-reveal>
+        <a class="coll__media ratio ratio--45" href={`/bo-suu-tap/${c.slug}/`} tabindex="-1" aria-hidden="true">
+          <Img k={c.image} alt="" sizes="(min-width: 900px) 40vw, 90vw" />
+        </a>
+        <div class="coll__body">
+          <p class="eyebrow eyebrow--line">{c.season}</p>
+          <h2><a href={`/bo-suu-tap/${c.slug}/`}>{c.name}</a></h2>
+          <p class="coll__tag serif"><em>{c.tagline}</em></p>
+          <p class="muted">{c.intro}</p>
+          <a class="link" href={`/bo-suu-tap/${c.slug}/`}>Khám phá {byCollection(c.slug).length} thiết kế <Icon name="arrow-right" /></a>
+        </div>
+      </article>
+    ))}
+  </div>
+</Base>
+<style is:global>
+  .colls { display: grid; gap: clamp(4rem, 9vw, 8rem); padding-bottom: var(--section); }
+  .coll { display: grid; gap: 2rem; align-items: center; }
+  @media (min-width: 900px) {
+    .coll { grid-template-columns: 1fr 1fr; gap: clamp(3rem, 8vw, 8rem); }
+    .coll--rev .coll__media { order: 2; }
+  }
+  .coll__media { display: block; }
+  .coll__media img { transition: transform 1.6s var(--ease-out); }
+  .coll__media:hover img { transform: scale(1.04); }
+  .coll h2 { font-size: var(--fs-1); margin-bottom: 0.4rem; }
+  .coll__tag { font-size: 1.35rem; margin: 0 0 1.2rem; color: var(--c-gold-dark); }
+  .coll__body { max-width: 480px; }
+</style>

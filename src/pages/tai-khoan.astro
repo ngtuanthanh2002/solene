@@ -1,0 +1,171 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import AuthForms from '../components/AuthForms.astro';
+import { PROVINCES } from '../data/content';
+const tabs = [
+  ['tong-quan', 'Tổng quan', 'home'], ['don-hang', 'Đơn hàng', 'package'], ['lich-hen', 'Lịch hẹn', 'calendar'], ['yeu-thich', 'Yêu thích', 'heart'],
+  ['thong-tin', 'Thông tin cá nhân', 'user'], ['dia-chi', 'Sổ địa chỉ', 'pin'], ['bao-mat', 'Bảo mật', 'lock'],
+];
+---
+<Base title="Tài khoản" description="Quản lý tài khoản, đơn hàng, lịch hẹn và danh sách yêu thích tại Solène." noindex bodyClass="page-account">
+  <!-- Khách -->
+  <section class="container guest" data-guest hidden>
+    <div class="guest__media ratio" ><Img k="ed-satin-hand" alt="" sizes="(min-width: 900px) 45vw, 0px" /><div class="guest__quote"><p class="serif"><em>“Mỗi món trang sức là một lời hứa được gìn giữ.”</em></p></div></div>
+    <div class="guest__form">
+      <AuthForms prefix="p" />
+      <ul class="guest__perks" role="list">
+        <li><Icon name="package" />Theo dõi đơn hàng &amp; tiến độ chế tác</li>
+        <li><Icon name="heart" />Lưu thiết kế yêu thích trên mọi thiết bị</li>
+        <li><Icon name="crown" />Ưu đãi &amp; sự kiện riêng của Solène Circle</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Thành viên -->
+  <section class="container account" data-account hidden>
+    <header class="account__head">
+      <div class="account__who">
+        <span class="account__avatar" data-acc-avatar></span>
+        <div>
+          <p class="eyebrow" style="margin:0 0 .3rem" data-acc-tier>Solène Circle</p>
+          <h1 class="account__name">Xin chào, <em data-acc-name></em></h1>
+          <p class="small muted" style="margin:0" data-acc-meta></p>
+        </div>
+      </div>
+      <button class="btn btn--outline btn--sm" type="button" data-logout><Icon name="logout" />Đăng xuất</button>
+    </header>
+
+    <div class="account__grid">
+      <nav class="account__nav" aria-label="Tài khoản">
+        {tabs.map(([k, label, ic]) => <a href={`#${k}`} data-acc-tab={k}><Icon name={ic} />{label}</a>)}
+      </nav>
+      <div class="account__body">
+        <div data-acc-panel="tong-quan"></div>
+        <div data-acc-panel="don-hang" hidden></div>
+        <div data-acc-panel="lich-hen" hidden></div>
+        <div data-acc-panel="yeu-thich" hidden></div>
+        <div data-acc-panel="thong-tin" hidden>
+          <h2 class="acc-h">Thông tin cá nhân</h2>
+          <form class="form-grid form-grid--2 acc-form" data-profile-form novalidate>
+            <div class="field span-2"><label for="pf-name">Họ và tên</label><input class="input" id="pf-name" name="name" required autocomplete="name" /><span class="field-error" data-error-for="name"></span></div>
+            <div class="field"><label for="pf-email">Email</label><input class="input" id="pf-email" name="email" type="email" readonly /></div>
+            <div class="field"><label for="pf-phone">Điện thoại</label><input class="input" id="pf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" /><span class="field-error" data-error-for="phone"></span></div>
+            <div class="field"><label for="pf-bday">Ngày sinh</label><input class="input" id="pf-bday" name="birthday" type="date" /></div>
+            <div class="field"><label for="pf-anni">Ngày kỷ niệm</label><input class="input" id="pf-anni" name="anniversary" type="date" /><span class="field-hint">Solène sẽ gửi lời chúc và quà nhỏ vào dịp đặc biệt này.</span></div>
+            <label class="check span-2"><input type="checkbox" name="newsletter" /><span class="box"></span>Nhận thư mời sự kiện &amp; bộ sưu tập mới</label>
+            <div class="span-2"><button class="btn" type="submit">Lưu thay đổi</button></div>
+          </form>
+        </div>
+        <div data-acc-panel="dia-chi" hidden>
+          <div class="acc-row"><h2 class="acc-h">Sổ địa chỉ</h2><button class="btn btn--outline btn--sm" type="button" data-addr-new><Icon name="plus" />Thêm địa chỉ</button></div>
+          <div class="addr-list" data-addr-list></div>
+          <form class="form-grid form-grid--2 acc-form addr-form" data-addr-form hidden novalidate>
+            <input type="hidden" name="id" />
+            <div class="field"><label for="ad-name">Họ tên</label><input class="input" id="ad-name" name="name" required /><span class="field-error" data-error-for="name"></span></div>
+            <div class="field"><label for="ad-phone">Điện thoại</label><input class="input" id="ad-phone" name="phone" type="tel" required /><span class="field-error" data-error-for="phone"></span></div>
+            <div class="field"><label for="ad-prov">Tỉnh / Thành phố</label><select class="select" id="ad-prov" name="province" required><option value="">Chọn</option>{PROVINCES.map((p) => <option value={p}>{p}</option>)}</select><span class="field-error" data-error-for="province"></span></div>
+            <div class="field"><label for="ad-ward">Phường / Xã</label><input class="input" id="ad-ward" name="ward" required /><span class="field-error" data-error-for="ward"></span></div>
+            <div class="field span-2"><label for="ad-street">Số nhà, tên đường</label><input class="input" id="ad-street" name="street" required /><span class="field-error" data-error-for="street"></span></div>
+            <label class="check span-2"><input type="checkbox" name="isDefault" /><span class="box"></span>Đặt làm địa chỉ mặc định</label>
+            <div class="span-2" style="display:flex;gap:.6rem"><button class="btn" type="submit">Lưu địa chỉ</button><button class="btn btn--outline" type="button" data-addr-cancel>Hủy</button></div>
+          </form>
+        </div>
+        <div data-acc-panel="bao-mat" hidden>
+          <h2 class="acc-h">Bảo mật</h2>
+          <div data-sec-google hidden class="sec-note"><Icon name="shield" /><p>Tài khoản của bạn đăng nhập bằng <b>Google</b>. Mật khẩu và xác minh hai bước được quản lý tại tài khoản Google. Bạn có thể tạo thêm mật khẩu Solène để đăng nhập bằng email.</p></div>
+          <form class="form-grid acc-form" data-pw-form novalidate style="max-width:480px">
+            <div class="field" data-pw-current><label for="pw-cur">Mật khẩu hiện tại</label><input class="input" id="pw-cur" name="current" type="password" autocomplete="current-password" /><span class="field-error" data-error-for="current"></span></div>
+            <div class="field"><label for="pw-new">Mật khẩu mới</label><input class="input" id="pw-new" name="next" type="password" autocomplete="new-password" /><span class="field-error" data-error-for="next"></span></div>
+            <div class="field"><label for="pw-new2">Nhập lại mật khẩu mới</label><input class="input" id="pw-new2" name="next2" type="password" autocomplete="new-password" /><span class="field-error" data-error-for="next2"></span></div>
+            <div><button class="btn" type="submit">Cập nhật mật khẩu</button></div>
+          </form>
+          <hr />
+          <p class="small muted">Dữ liệu tài khoản của website demo được lưu trên trình duyệt này (localStorage).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { initAccount } from '../scripts/pages/account';
+  initAccount();
+</script>
+
+<style is:global>
+  .guest { display: grid; gap: 2rem; padding-block: 1.5rem var(--section); align-items: start; }
+  @media (min-width: 900px) { .guest { grid-template-columns: 1fr 1fr; gap: 4rem; } }
+  .guest__media { position: relative; aspect-ratio: 4 / 5; display: none; }
+  @media (min-width: 900px) { .guest__media { display: block; position: sticky; top: calc(var(--header-h) + 1.2rem); } }
+  .guest__quote { position: absolute; left: 0; right: 0; bottom: 0; padding: 4rem 2rem 2rem; background: linear-gradient(0deg, rgba(0, 0, 0, 0.6), transparent); }
+  .guest__quote .serif { color: #fff; font-size: 1.6rem; margin: 0; }
+  .guest__quote em { color: #fff; }
+  .guest__form .auth { padding: 0; max-width: 480px; }
+  .guest__perks { list-style: none; display: grid; gap: 0.7rem; margin-top: 2rem; padding-top: 1.6rem; border-top: 1px solid var(--c-line); max-width: 480px; font-size: var(--fs-sm); color: var(--c-ink-2); }
+  .guest__perks li { display: flex; align-items: center; gap: 0.7rem; }
+  .guest__perks svg { width: 18px; height: 18px; color: var(--c-gold-dark); }
+  .account { padding-block: 1.5rem var(--section); }
+  .account__head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding-bottom: 2rem; border-bottom: 1px solid var(--c-line); margin-bottom: 2rem; }
+  .account__who { display: flex; align-items: center; gap: 1.2rem; }
+  .account__avatar { width: 68px; height: 68px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--c-dark); color: var(--c-gold-2); font-family: var(--ff-serif); font-size: 1.6rem; box-shadow: 0 0 0 3px var(--c-bg), 0 0 0 4px var(--c-gold-2); }
+  .account__avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .account__name { font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.5rem); margin: 0 0 0.2rem; }
+  .account__grid { display: grid; gap: 2rem; }
+  @media (min-width: 960px) { .account__grid { grid-template-columns: 240px 1fr; gap: 4rem; } }
+  .account__nav { display: flex; gap: 0.2rem; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--c-line); }
+  .account__nav::-webkit-scrollbar { display: none; }
+  @media (min-width: 960px) { .account__nav { flex-direction: column; border: 0; position: sticky; top: calc(var(--header-h) + 1.2rem); align-self: start; } }
+  .account__nav a { display: flex; align-items: center; gap: 0.7rem; padding: 0.85rem 0.9rem; font-size: var(--fs-sm); white-space: nowrap; color: var(--c-ink-2); border-bottom: 2px solid transparent; transition: background-color 0.25s, color 0.25s; }
+  .account__nav a svg { width: 18px; height: 18px; }
+  .account__nav a:hover { color: var(--c-ink); }
+  .account__nav a[aria-current='true'] { color: var(--c-ink); font-weight: 500; border-color: var(--c-ink); }
+  @media (min-width: 960px) { .account__nav a { border-bottom: 0; border-left: 2px solid transparent; } .account__nav a[aria-current='true'] { border-color: var(--c-gold); background: var(--c-bg-2); } }
+  .account__body { min-width: 0; }
+  .acc-h { font-size: var(--fs-3); margin-bottom: 1.4rem; }
+  .acc-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+  .acc-row .acc-h { margin: 0; }
+  .acc-form { max-width: 720px; }
+  .acc-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--c-line); border: 1px solid var(--c-line); margin-bottom: 2rem; }
+  @media (min-width: 760px) { .acc-stats { grid-template-columns: repeat(4, 1fr); } }
+  .acc-stats div { background: var(--c-bg); padding: 1.3rem 1.2rem; display: grid; gap: 0.2rem; }
+  .acc-stats b { font-family: var(--ff-serif); font-weight: 300; font-size: 1.9rem; line-height: 1.1; }
+  .acc-stats span { font-size: var(--fs-xxs); letter-spacing: 0.16em; text-transform: uppercase; color: var(--c-muted); }
+  .tier-card { position: relative; overflow: hidden; padding: 1.8rem; background: var(--c-dark); color: #e9e9e9; margin-bottom: 2rem; display: grid; gap: 0.8rem; }
+  .tier-card::after { content: ''; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(226, 199, 154, 0.35), transparent 65%); }
+  .tier-card .serif { color: #fff; font-size: 1.7rem; margin: 0; }
+  .tier-card .serif em { color: var(--c-gold-2); }
+  .tier-bar { height: 3px; background: rgba(255, 255, 255, 0.15); }
+  .tier-bar i { display: block; height: 100%; background: var(--g-gold); }
+  .order { border: 1px solid var(--c-line); background: #fff; margin-bottom: 1rem; }
+  .order__head { display: flex; flex-wrap: wrap; gap: 0.6rem 1.6rem; align-items: center; justify-content: space-between; padding: 1.1rem 1.3rem; border-bottom: 1px solid var(--c-line); font-size: var(--fs-sm); }
+  .order__code { font-family: var(--ff-serif); font-size: 1.15rem; }
+  .order__thumbs { display: flex; gap: 0.4rem; padding: 1rem 1.3rem 0; }
+  .order__thumbs img { width: 52px; aspect-ratio: 4 / 5; object-fit: cover; background: var(--c-bg-2); }
+  .order__thumbs img.svgimg { object-fit: contain; background: var(--g-satin); }
+  .order__body { padding: 1rem 1.3rem 1.3rem; display: grid; gap: 1rem; }
+  .timeline { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.3rem; counter-reset: t; }
+  .timeline li { position: relative; display: grid; justify-items: center; gap: 0.45rem; text-align: center; font-size: 0.66rem; letter-spacing: 0.04em; color: var(--c-muted); }
+  .timeline li::before { content: ''; width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--c-line-2); background: var(--c-bg); z-index: 1; }
+  .timeline li::after { content: ''; position: absolute; top: 6px; left: -50%; right: 50%; height: 1px; background: var(--c-line-2); }
+  .timeline li:first-child::after { display: none; }
+  .timeline li.is-done { color: var(--c-ink); }
+  .timeline li.is-done::before { background: var(--c-gold); border-color: var(--c-gold); }
+  .timeline li.is-done::after { background: var(--c-gold); }
+  .timeline li.is-current::before { box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.08); }
+  .order__actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .order details summary { cursor: pointer; font-size: var(--fs-xs); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 500; }
+  .addr-list { display: grid; gap: 1rem; margin-bottom: 1.6rem; }
+  @media (min-width: 760px) { .addr-list { grid-template-columns: 1fr 1fr; } }
+  .addr { padding: 1.2rem 1.3rem; border: 1px solid var(--c-line); background: #fff; font-size: var(--fs-sm); display: grid; gap: 0.3rem; }
+  .addr.is-default { border-color: var(--c-gold); }
+  .addr__actions { display: flex; gap: 1rem; margin-top: 0.5rem; }
+  .addr-form { padding: 1.4rem; border: 1px solid var(--c-line); background: var(--c-bg-2); }
+  .sec-note { display: flex; gap: 0.8rem; padding: 1rem 1.2rem; background: var(--g-satin); border: 1px solid var(--c-line); margin-bottom: 1.6rem; font-size: var(--fs-sm); }
+  .sec-note svg { width: 20px; height: 20px; color: var(--c-gold-dark); flex: none; }
+  .sec-note p { margin: 0; }
+  .appt { padding: 1.2rem 1.3rem; border: 1px solid var(--c-line); background: #fff; display: grid; gap: 0.4rem; margin-bottom: 1rem; font-size: var(--fs-sm); }
+  .appt__top { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center; }
+  .appt__date { font-family: var(--ff-serif); font-size: 1.25rem; }
+</style>

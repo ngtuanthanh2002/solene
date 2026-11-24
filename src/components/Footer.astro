@@ -1,0 +1,62 @@
+---
+import Icon from './Icon.astro';
+import { SITE } from '../config';
+const year = new Date().getFullYear();
+const cols = [
+  { title: 'Danh mục', links: [['Nhẫn cầu hôn', '/nhan-cau-hon/'], ['Nhẫn cưới', '/nhan-cuoi/'], ['Trang sức', '/trang-suc/'], ['Kim cương viên GIA', '/kim-cuong/'], ['Trang sức cao cấp', '/trang-suc-cao-cap/'], ['Bộ sưu tập', '/bo-suu-tap/']] },
+  { title: 'Dịch vụ khách hàng', links: [['Hướng dẫn đo ni tay', '/huong-dan-do-ni-tay/'], ['Cẩm nang kim cương 4C', '/kien-thuc-kim-cuong/'], ['Bảo hành trọn đời', '/chinh-sach/bao-hanh/'], ['Thu đổi & hoàn tiền', '/chinh-sach/doi-tra/'], ['Giao hàng', '/chinh-sach/van-chuyen/'], ['Câu hỏi thường gặp', '/chinh-sach/cau-hoi-thuong-gap/']] },
+  { title: 'Maison Solène', links: [['Câu chuyện thương hiệu', '/ve-chung-toi/'], ['Thiết kế nhẫn riêng', '/thiet-ke-nhan/'], ['Đặt lịch hẹn', '/dat-lich-hen/'], ['Hệ thống showroom', '/lien-he/'], ['Thanh toán & trả góp', '/chinh-sach/thanh-toan/'], ['Bảo mật thông tin', '/chinh-sach/bao-mat/']] },
+];
+---
+<footer class="site-footer">
+  <div class="container footer-news">
+    <div>
+      <p class="eyebrow">Bản tin</p>
+      <h2>Nhận thư mời sự kiện &amp; bộ sưu tập mới</h2>
+      <p>Ưu đãi 1.000.000 ₫ cho đơn hàng đầu tiên từ 10 triệu với mã WELCOME.</p>
+    </div>
+    <form class="news-form" data-newsletter novalidate>
+      <label for="news-email" class="sr-only">Email của bạn</label>
+      <input id="news-email" type="email" name="email" placeholder="Địa chỉ email" autocomplete="email" required />
+      <button type="submit">Đăng ký <Icon name="arrow-right" /></button>
+    </form>
+  </div>
+
+  <div class="container footer-main">
+    {cols.map((c) => (
+      <div class="footer-col">
+        <details open data-footer-acc>
+          <summary><h3>{c.title}<span class="plus" aria-hidden="true">+</span></h3></summary>
+          <ul role="list">{c.links.map(([label, href]) => <li><a href={href}>{label}</a></li>)}</ul>
+        </details>
+      </div>
+    ))}
+    <div class="footer-col">
+      <details open data-footer-acc>
+        <summary><h3>Liên hệ<span class="plus" aria-hidden="true">+</span></h3></summary>
+        <ul class="footer-contact" role="list">
+          <li><a href={SITE.phoneHref}>{SITE.phone} (miễn phí)</a></li>
+          <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+          {SITE.boutiques.map((b) => <li><span>{b.address}</span></li>)}
+          <li><span class="muted">{SITE.hours}</span></li>
+          <li>
+            <div class="socials">
+              <a href={SITE.social.facebook} target="_blank" rel="noopener" aria-label="Facebook"><Icon name="facebook" /></a>
+              <a href={SITE.social.instagram} target="_blank" rel="noopener" aria-label="Instagram"><Icon name="instagram" /></a>
+              <a href={SITE.social.tiktok} target="_blank" rel="noopener" aria-label="TikTok"><Icon name="tiktok" /></a>
+              <a href={SITE.social.youtube} target="_blank" rel="noopener" aria-label="YouTube"><Icon name="youtube" /></a>
+            </div>
+          </li>
+        </ul>
+      </details>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <a href="/" class="logo" aria-label={`${SITE.legalName} — Trang chủ`}><span class="logo__word">SOLÈNE</span></a>
+    <p style="margin:0">© {year} {SITE.legalName}. Website demo — thông tin thương hiệu mang tính minh họa.</p>
+    <div class="pay-badges" aria-label="Phương thức thanh toán">
+      <span>Visa</span><span>Mastercard</span><span>JCB</span><span>Napas</span><span>COD</span><span>Trả góp 0%</span>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE } from '../config';
+import { SERVICES } from '../lib/calendar';
+import { breadcrumbLd } from '../lib/seo';
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Đặt lịch hẹn' }];
+const SERVICE_DESC: Record<string, string> = {
+  'nhan-cau-hon': 'Chọn kiểu dáng, xem kim cương dưới kính lúp', 'nhan-cuoi': 'Thử nhiều mẫu, đo ni cho cả hai',
+  'thiet-ke-rieng': 'Phác thảo cùng nhà thiết kế Solène', 'kim-cuong': 'So sánh 4C, đối chiếu giấy GIA',
+  'do-ni': 'Đo ni bằng bộ ni chuẩn, thử nhẫn', 'bao-hanh': 'Làm sạch, siết chấu, đánh bóng miễn phí',
+};
+---
+<Base title="Đặt lịch hẹn tại showroom" description="Đặt lịch hẹn riêng miễn phí tại showroom Solène Sài Gòn & Hà Nội: tư vấn nhẫn cầu hôn, nhẫn cưới, thiết kế riêng, xem kim cương GIA." jsonld={breadcrumbLd(crumbs, Astro.site!)}>
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+  <section class="container appt-page" data-appt>
+    <div class="appt-page__intro">
+      <p class="eyebrow eyebrow--line">Private Appointment</p>
+      <h1>Đặt lịch hẹn <em>riêng</em></h1>
+      <p class="lead">Một không gian riêng tư, một chuyên viên chỉ dành cho bạn — thưởng trà, thử nhẫn và chiêm ngưỡng kim cương dưới kính lúp. Hoàn toàn miễn phí.</p>
+      <div class="ratio ratio--45 appt-page__img"><Img k="ed-boutique" alt="Không gian trưng bày tại showroom Solène" sizes="(min-width: 1000px) 32vw, 90vw" /></div>
+      <ul class="appt-perks" role="list">
+        <li><Icon name="clock" />60 phút tư vấn 1:1, không giới hạn số mẫu thử</li>
+        <li><Icon name="gem" />Xem kim cương GIA bằng kính lúp 10x</li>
+        <li><Icon name="gift" />Thưởng trà &amp; quà tặng nhỏ cho cặp đôi</li>
+      </ul>
+    </div>
+
+    <form class="appt-form" data-appt-form novalidate>
+      <fieldset class="co-sec">
+        <legend class="co-sec__title"><span>1</span>Bạn cần tư vấn về</legend>
+        <div class="svc-grid">
+          {Object.entries(SERVICES).map(([k, label], i) => (
+            <label class="option-card"><input type="radio" name="service" value={k} checked={i === 0} /><span class="oc"><span class="oc__body"><span class="oc__title">{label}</span><span class="oc__desc">{SERVICE_DESC[k]}</span></span></span></label>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset class="co-sec">
+        <legend class="co-sec__title"><span>2</span>Showroom</legend>
+        <div class="svc-grid">
+          {SITE.boutiques.map((b, i) => (
+            <label class="option-card"><input type="radio" name="boutique" value={b.id} checked={i === 0} /><span class="oc"><span class="oc__body"><span class="oc__title">{b.name}</span><span class="oc__desc">{b.address} · {b.hours}</span></span></span></label>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset class="co-sec">
+        <legend class="co-sec__title"><span>3</span>Ngày &amp; giờ</legend>
+        <div class="date-strip" role="radiogroup" aria-label="Chọn ngày" data-dates></div>
+        <div class="slots" role="radiogroup" aria-label="Chọn giờ" data-slots></div>
+        <span class="field-error" data-error-for="slot"></span>
+      </fieldset>
+      <fieldset class="co-sec">
+        <legend class="co-sec__title"><span>4</span>Thông tin của bạn</legend>
+        <div class="form-grid form-grid--2">
+          <div class="field span-2"><label for="ap-name">Họ tên <span class="req">*</span></label><input class="input" id="ap-name" name="name" autocomplete="name" required /><span class="field-error" data-error-for="name"></span></div>
+          <div class="field"><label for="ap-phone">Điện thoại <span class="req">*</span></label><input class="input" id="ap-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required /><span class="field-error" data-error-for="phone"></span></div>
+          <div class="field"><label for="ap-email">Email</label><input class="input" id="ap-email" name="email" type="email" autocomplete="email" /><span class="field-error" data-error-for="email"></span></div>
+          <div class="field span-2"><label for="ap-note">Ghi chú</label><textarea class="textarea" id="ap-note" name="note" maxlength="400" placeholder="Ngân sách dự kiến, mẫu bạn quan tâm, ngày cưới…"></textarea></div>
+        </div>
+      </fieldset>
+      <button class="btn btn--block co-submit" type="submit"><Icon name="calendar" />Xác nhận lịch hẹn</button>
+    </form>
+
+    <div class="appt-done" data-appt-done hidden>
+      <div class="success__icon"><Icon name="check" /></div>
+      <p class="eyebrow">Đã đặt lịch thành công</p>
+      <h2>Hẹn gặp bạn tại <em data-ad-boutique></em></h2>
+      <p class="lead" data-ad-when></p>
+      <p class="muted small" data-ad-code></p>
+      <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.6rem">
+        <a class="btn" href="#" target="_blank" rel="noopener" data-ad-gcal><Icon name="calendar" />Thêm vào Google Calendar</a>
+        <a class="btn btn--outline" href="/tai-khoan/#lich-hen">Quản lý lịch hẹn</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { initAppointment } from '../scripts/pages/appointment';
+  initAppointment();
+</script>
+
+<style is:global>
+  .appt-page { display: grid; gap: 2.5rem; padding-bottom: var(--section); align-items: start; }
+  @media (min-width: 1000px) { .appt-page { grid-template-columns: 0.8fr 1.2fr; gap: 5rem; } .appt-page__intro { position: sticky; top: calc(var(--header-h) + 1.2rem); } }
+  .appt-page__img { margin: 1.8rem 0 1.4rem; }
+  @media (max-width: 999px) { .appt-page__img { display: none; } }
+  .appt-perks { list-style: none; display: grid; gap: 0.7rem; font-size: var(--fs-sm); color: var(--c-ink-2); }
+  .appt-perks li { display: flex; gap: 0.7rem; align-items: center; }
+  .appt-perks svg { width: 18px; height: 18px; color: var(--c-gold-dark); flex: none; }
+  .svc-grid { display: grid; gap: 0.6rem; }
+  @media (min-width: 640px) { .svc-grid { grid-template-columns: 1fr 1fr; } }
+  .svc-grid .oc::before { display: none; }
+  .date-strip { display: flex; gap: 0.5rem; overflow-x: auto; scrollbar-width: none; padding-bottom: 0.4rem; margin-bottom: 1.2rem; }
+  .date-strip::-webkit-scrollbar { display: none; }
+  .date-btn { flex: none; width: 70px; padding: 0.7rem 0; border: 1px solid var(--c-line-2); background: #fff; display: grid; justify-items: center; gap: 0.1rem; transition: border-color 0.25s, background-color 0.25s, color 0.25s; }
+  .date-btn small { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-muted); }
+  .date-btn b { font-family: var(--ff-serif); font-weight: 400; font-size: 1.5rem; line-height: 1.1; }
+  .date-btn[aria-checked='true'] { background: var(--c-dark); border-color: var(--c-dark); color: #fff; }
+  .date-btn[aria-checked='true'] small { color: var(--c-gold-2); }
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 0.5rem; }
+  .slot { padding: 0.7rem 0; border: 1px solid var(--c-line-2); background: #fff; font-size: 0.88rem; transition: border-color 0.25s, background-color 0.25s, color 0.25s; }
+  .slot:hover:not(:disabled) { border-color: var(--c-ink); }
+  .slot[aria-checked='true'] { background: var(--c-ink); color: #fff; border-color: var(--c-ink); }
+  .slot:disabled { opacity: 0.35; text-decoration: line-through; cursor: not-allowed; }
+  .appt-done { grid-column: 1 / -1; text-align: center; padding: clamp(2rem, 6vw, 4rem); background: var(--g-satin); border: 1px solid var(--c-line); }
+</style>

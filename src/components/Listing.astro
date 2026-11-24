@@ -1,0 +1,163 @@
+---
+/** Trang danh sách có bộ lọc — dùng cho danh mục, cửa hàng, bộ sưu tập */
+import Icon from './Icon.astro';
+import RingIcon from './RingIcon.astro';
+import ProductCard from './ProductCard.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import { STYLES, SHAPES, MOODS, METALS, METAL_KEYS, TYPES, PRICE_RANGES, SORTS } from '../lib/catalog';
+import { COLLECTIONS } from '../data/collections';
+import type { Product } from '../data/products';
+import type { FilterKey } from '../data/categories';
+import type { Crumb } from '../lib/seo';
+
+interface Props {
+  products: Product[];
+  filters: FilterKey[];
+  quick?: 'style' | 'shape' | 'type';
+  crumbs: Crumb[];
+  emptyBuilder?: boolean;
+}
+const { products, filters, quick, crumbs, emptyBuilder = false } = Astro.props;
+
+const countBy = (fn: (p: Product) => boolean) => products.filter(fn).length;
+const groups: { key: FilterKey; param: string; title: string; options: { value: string; label: string; count: number; swatch?: string; icon?: { style?: any; shape?: any } }[]; single?: boolean }[] = [];
+for (const f of filters) {
+  if (f === 'style') groups.push({ key: f, param: 'kieu-dang', title: 'Kiểu dáng', options: STYLES.map((s) => ({ value: s.key, label: s.label, count: countBy((p) => p.style === s.key), icon: { style: s.key } })) });
+  if (f === 'shape') groups.push({ key: f, param: 'vien-chu', title: 'Kiểu viên chủ', options: SHAPES.map((s) => ({ value: s.key, label: `${s.label} · ${s.vi}`, count: countBy((p) => p.shape === s.key), icon: { shape: s.key } })) });
+  if (f === 'type') {
+    const types = [...new Set(products.map((p) => p.type))];
+    if (types.length > 1) groups.push({ key: f, param: 'loai', title: 'Loại sản phẩm', options: types.map((t) => ({ value: t, label: TYPES[t] || t, count: countBy((p) => p.type === t) })) });
+  }
+  if (f === 'mood') groups.push({ key: f, param: 'phong-cach', title: 'Phong cách', options: MOODS.map((m) => ({ value: m.key, label: m.label, count: countBy((p) => p.moods.includes(m.key)) })) });
+  if (f === 'metal') groups.push({ key: f, param: 'chat-lieu', title: 'Chất liệu', options: METAL_KEYS.map((k) => ({ value: k, label: METALS[k].label, count: countBy((p) => p.metals.includes(k)), swatch: METALS[k].swatch })) });
+  if (f === 'collection') groups.push({ key: f, param: 'bo-suu-tap', title: 'Bộ sưu tập', options: COLLECTIONS.map((c) => ({ value: c.slug, label: c.name, count: countBy((p) => p.collection === c.slug) })).filter((o) => o.count > 0) });
+  if (f === 'price') groups.push({ key: f, param: 'gia', title: 'Khoảng giá', single: true, options: PRICE_RANGES.map((r) => ({ value: r.key, label: r.label, count: countBy((p) => p.price >= r.min && p.price < r.max) })).filter((o) => o.count > 0) });
+}
+const quickItems = quick === 'style'
+  ? STYLES.map((s) => ({ value: s.key, label: s.label, style: s.key as any }))
+  : quick === 'shape'
+    ? SHAPES.map((s) => ({ value: s.key, label: s.label, shape: s.key as any }))
+    : quick === 'type'
+      ? [...new Set(products.map((p) => p.type))].map((t) => ({ value: t, label: TYPES[t] || t }))
+      : [];
+const quickParam = quick === 'style' ? 'kieu-dang' : quick === 'shape' ? 'vien-chu' : 'loai';
+---
+<div class="container listing" data-listing data-empty-builder={emptyBuilder ? '1' : undefined}>
+  <Breadcrumbs items={crumbs} />
+
+  {quickItems.length > 1 && (
+    <div class="quick" role="group" aria-label="Lọc nhanh" data-quick={quickParam}>
+      {quickItems.map((q: any) => (
+        <button type="button" class:list={['quick__item', { 'quick__item--icon': q.style || q.shape }]} data-quick-value={q.value} aria-pressed="false">
+          {q.style && <span class="quick__ico"><RingIcon style={q.style} strokeWidth={2.8} /></span>}
+          {q.shape && <span class="quick__ico"><RingIcon shape={q.shape} strokeWidth={2.4} /></span>}
+          <span>{q.label}</span>
+        </button>
+      ))}
+    </div>
+  )}
+
+  <div class="toolbar">
+    <button class="toolbar__filter" type="button" data-drawer-open="filters" aria-controls="filters" aria-expanded="false"><Icon name="filter" />Bộ lọc<span class="toolbar__badge" data-filter-count hidden></span></button>
+    <p class="toolbar__count" aria-live="polite"><b data-result-count>{products.length}</b> thiết kế</p>
+    <label class="toolbar__sort"><span class="sr-only">Sắp xếp theo</span>
+      <select class="select select--plain" data-sort>{SORTS.map((s) => <option value={s.key}>{s.label}</option>)}</select>
+    </label>
+  </div>
+  <div class="active-filters" data-active-filters></div>
+
+  <div class="product-grid product-grid--4" data-grid>
+    {products.map((p, i) => <ProductCard product={p} index={i} eager={i < 2} />)}
+  </div>
+
+  <div class="listing-empty" data-empty hidden>
+    <div class="listing-empty__ring" data-empty-ring aria-hidden="true"></div>
+    <div>
+      <p class="eyebrow">Chế tác theo yêu cầu</p>
+      <h2 class="listing-empty__title" data-empty-title>Chưa có mẫu sẵn phù hợp</h2>
+      <p class="muted" data-empty-text>Hãy thử bỏ bớt bộ lọc — hoặc để nghệ nhân Solène chế tác riêng cho bạn.</p>
+      <div class="listing-empty__ctas">
+        <a class="btn" href="/thiet-ke-nhan/" data-empty-builder-link><Icon name="sparkle" />Thiết kế nhẫn riêng</a>
+        <button class="btn btn--outline" type="button" data-filter-clear>Xóa bộ lọc</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aside class="drawer drawer--left" id="filters" data-drawer="filters" aria-label="Bộ lọc sản phẩm" aria-hidden="true" tabindex="-1">
+  <div class="drawer__head">
+    <h2 class="drawer__title">Bộ lọc</h2>
+    <button class="icon-btn" type="button" data-drawer-close aria-label="Đóng bộ lọc"><Icon name="close" /></button>
+  </div>
+  <form class="drawer__body filters accordion" data-filter-form>
+    {groups.map((g) => (
+      <details open>
+        <summary>{g.title}<span class="plus"></span></summary>
+        <div class="acc-body filters__opts">
+          {g.options.map((o) => (
+            <label class:list={['check', 'filters__opt', { 'is-empty': o.count === 0 }]}>
+              <input type={g.single ? 'radio' : 'checkbox'} name={g.param} value={o.value} />
+              <span class="box"></span>
+              {o.icon?.style && <span class="filters__ico"><RingIcon style={o.icon.style} strokeWidth={3} /></span>}
+              {o.icon?.shape && <span class="filters__ico"><RingIcon shape={o.icon.shape} strokeWidth={2.6} /></span>}
+              {o.swatch && <i class="filters__swatch" style={`background:${o.swatch}`}></i>}
+              <span class="filters__label">{o.label}</span>
+              <span class="filters__n" data-count-for={`${g.param}:${o.value}`}>{o.count}</span>
+            </label>
+          ))}
+        </div>
+      </details>
+    ))}
+  </form>
+  <div class="drawer__foot filters__foot">
+    <button class="btn btn--outline" type="button" data-filter-clear>Xóa tất cả</button>
+    <button class="btn" type="button" data-drawer-close>Xem <span data-result-count>{products.length}</span> kết quả</button>
+  </div>
+</aside>
+
+<script>
+  import { initListing } from '../scripts/pages/listing';
+  initListing();
+</script>
+
+<style is:global>
+  .listing { padding-bottom: var(--section); }
+  .quick { display: flex; gap: 0.6rem; overflow-x: auto; scrollbar-width: none; padding: 0.4rem 0 1.4rem; margin-top: 0.4rem; }
+  .quick::-webkit-scrollbar { display: none; }
+  .quick__item { flex: none; display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1.1rem; border: 1px solid var(--c-line-2); border-radius: 999px; background: #fff; font-size: 0.8rem; transition: border-color 0.25s, background-color 0.25s, color 0.25s; }
+  .quick__item--icon { flex-direction: column; gap: 0.5rem; padding: 0.75rem 0.5rem 0.7rem; border-color: transparent; border-radius: 0; background: transparent; min-width: 92px; font-size: 0.625rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; color: var(--c-muted); }
+  .quick__ico { width: 44px; height: 40px; display: grid; color: var(--c-muted); transition: color 0.25s; }
+  .quick__item--icon .quick__ico { width: 54px; height: 50px; }
+  .quick__item:hover { border-color: var(--c-ink); }
+  .quick__item--icon:hover { border-color: transparent; color: var(--c-ink); }
+  .quick__item--icon:hover .quick__ico { color: var(--c-ink); }
+  .quick__item[aria-pressed='true'] { background: var(--c-ink); color: #fff; border-color: var(--c-ink); }
+  .quick__item--icon[aria-pressed='true'] { background: var(--c-bg-2); color: var(--c-ink); border-color: transparent; }
+  .quick__item--icon[aria-pressed='true'] .quick__ico { color: var(--c-ink); }
+  .toolbar { position: sticky; top: var(--header-h); z-index: 20; display: flex; align-items: center; gap: 1rem; justify-content: space-between; padding: 0.8rem 0; margin-bottom: 0.4rem; background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--c-line); transition: top 0.55s var(--ease-out); }
+  .site-header.is-hidden ~ main .toolbar, body:has(.site-header.is-hidden) .toolbar { top: 0; }
+  .toolbar__filter { display: inline-flex; align-items: center; gap: 0.6rem; font-size: var(--fs-xxs); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500; padding: 0.6rem 0; }
+  .toolbar__filter svg { width: 18px; height: 18px; }
+  .toolbar__badge { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--c-ink); color: #fff; font-size: 10px; display: inline-grid; place-items: center; letter-spacing: 0; }
+  .toolbar__count { margin: 0; font-size: var(--fs-sm); color: var(--c-muted); }
+  .toolbar__count b { color: var(--c-ink); font-weight: 500; }
+  .select--plain { min-height: 40px; border: 0; background-color: transparent; padding: 0.4rem 2rem 0.4rem 0.4rem; font-size: var(--fs-sm); background-position: right 0.4rem center; }
+  .select--plain:focus { box-shadow: none; }
+  @media (max-width: 560px) { .toolbar__count { display: none; } }
+  .active-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0 1.6rem; min-height: 0; }
+  .active-filters:empty { margin: 0 0 1.6rem; }
+  .filters__opts { display: grid; gap: 0.15rem; }
+  .filters__opt { display: flex; align-items: center; gap: 0.7rem; padding: 0.45rem 0; width: 100%; }
+  .filters__opt.is-empty { opacity: 0.45; }
+  .filters__ico { width: 34px; height: 30px; display: grid; color: var(--c-ink-2); flex: none; }
+  .filters__swatch { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.1); flex: none; }
+  .filters__label { flex: 1; }
+  .filters__n { font-size: var(--fs-xs); color: var(--c-muted); }
+  .filters__foot { display: grid; grid-template-columns: 1fr 1.4fr; gap: 0.6rem; }
+  .listing-empty { display: grid; gap: 2rem; align-items: center; padding: clamp(2rem, 5vw, 4rem); background: var(--g-satin); margin-top: 1rem; }
+  @media (min-width: 800px) { .listing-empty { grid-template-columns: minmax(240px, 0.8fr) 1fr; } }
+  .listing-empty__ring { max-width: 360px; width: 100%; margin: 0 auto; }
+  .listing-empty__ring svg { width: 100%; height: auto; }
+  .listing-empty__title { font-size: var(--fs-2); }
+  .listing-empty__ctas { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.6rem; }
+</style>

@@ -1,0 +1,158 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { RING_SIZES, sizeInfo } from '../lib/catalog';
+import { breadcrumbLd, faqLd } from '../lib/seo';
+
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Hướng dẫn đo ni tay' }];
+const rows = RING_SIZES.map(sizeInfo);
+const faq = [
+  { q: 'Đo ni tay vào thời điểm nào là chính xác nhất?', a: 'Nên đo vào cuối ngày, khi nhiệt độ phòng bình thường. Ngón tay thường nở hơn vào buổi chiều và co lại khi trời lạnh.' },
+  { q: 'Ni nhẫn nữ và nam phổ biến là bao nhiêu?', a: 'Tại Việt Nam, ni nhẫn nữ phổ biến từ 8 đến 12, ni nhẫn nam từ 16 đến 20. Bản nhẫn càng to (trên 4 mm) bạn nên tăng thêm nửa đến một ni.' },
+  { q: 'Đặt sai ni thì sao?', a: 'Solène chỉnh ni miễn phí một lần trong 60 ngày kể từ khi nhận nhẫn (tăng hoặc giảm tối đa 2 ni), áp dụng với hầu hết thiết kế.' },
+  { q: 'Ni tay Việt Nam quy đổi sang size US thế nào?', a: 'Ni Việt Nam tính theo chu vi lòng nhẫn (ni ≈ chu vi mm − 40). Ví dụ ni 10 có chu vi 50 mm, tương đương size US 5½.' },
+];
+---
+<Base title="Hướng dẫn đo ni tay chính xác tại nhà" description="3 cách đo ni tay chính xác tại nhà: đo trực tiếp trên màn hình bằng nhẫn có sẵn, đo bằng sợi chỉ, bảng quy đổi ni Việt Nam – chu vi – đường kính – size US. Chỉnh ni miễn phí tại Solène." jsonld={[breadcrumbLd(crumbs, Astro.site!), faqLd(faq)]}>
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+  <header class="page-title">
+    <p class="eyebrow">Ring Size Guide</p>
+    <h1>Hướng dẫn <em>đo ni tay</em></h1>
+    <p>Ba cách đơn giản để biết chính xác ni tay của bạn — hoặc của người ấy — ngay tại nhà.</p>
+  </header>
+
+  <!-- Công cụ đo trên màn hình -->
+  <section class="section--tight" aria-labelledby="tool-title">
+    <div class="container sizer" data-sizer>
+      <div class="sizer__intro">
+        <p class="eyebrow eyebrow--line">Cách 1 · Chính xác nhất</p>
+        <h2 id="tool-title">Đo bằng <em>chiếc nhẫn có sẵn</em> ngay trên màn hình</h2>
+        <ol class="sizer__steps" role="list">
+          <li class:list={['is-active']} data-step-label="1"><span>1</span>Hiệu chỉnh màn hình bằng một thẻ ngân hàng</li>
+          <li data-step-label="2"><span>2</span>Đặt nhẫn lên vòng tròn, chỉnh đến khi khớp mép trong</li>
+          <li data-step-label="3"><span>3</span>Nhận ni tay &amp; lưu để chọn sẵn khi mua</li>
+        </ol>
+        <p class="small muted">Thẻ ATM, thẻ tín dụng hay căn cước công dân đều có cùng kích thước chuẩn 85,6 × 54 mm.</p>
+      </div>
+
+      <div class="sizer__panel">
+        <div class="sizer__pane" data-pane="1">
+          <p class="sizer__hint"><Icon name="card" />Áp thẻ vào khung bên dưới, kéo thanh trượt đến khi khung khớp đúng mép thẻ.</p>
+          <div class="sizer__canvas"><div class="sizer__card" data-card><span>THẺ NGÂN HÀNG</span><i></i></div></div>
+          <label class="sizer__range"><span class="label">Kích thước khung</span><input type="range" min="2.2" max="7" step="0.01" value="3.78" data-ppm /></label>
+          <button class="btn btn--block" type="button" data-next>Đã khớp — tiếp tục <Icon name="arrow-right" /></button>
+        </div>
+        <div class="sizer__pane" data-pane="2" hidden>
+          <p class="sizer__hint"><Icon name="ring" />Đặt nhẫn lên vòng tròn. Chỉnh đến khi đường vàng trùng với mép <b>trong</b> của nhẫn.</p>
+          <div class="sizer__canvas sizer__canvas--ring"><div class="sizer__circle" data-circle><span data-circle-mm>16.5 mm</span></div></div>
+          <label class="sizer__range"><span class="label">Đường kính lòng nhẫn</span><input type="range" min="13" max="24" step="0.05" value="16.5" data-diam /></label>
+          <div class="sizer__result" aria-live="polite">
+            <div><span class="caps muted">Ni Việt Nam</span><b data-r-ni>12</b></div>
+            <div><span class="caps muted">Chu vi</span><b data-r-c>52 mm</b></div>
+            <div><span class="caps muted">Size US</span><b data-r-us>6</b></div>
+          </div>
+          <div class="sizer__actions">
+            <button class="btn btn--outline" type="button" data-back><Icon name="arrow-left" />Hiệu chỉnh lại</button>
+            <button class="btn" type="button" data-save>Lưu ni của tôi</button>
+          </div>
+          <p class="tiny muted" data-saved-note hidden>Đã lưu! Ni này sẽ được chọn sẵn trên trang sản phẩm.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Đo bằng sợi chỉ -->
+  <section class="section section--cream" aria-labelledby="string-title">
+    <div class="container string">
+      <div class="string__img ratio ratio--45"><Img k="ed-hands-white" alt="Bàn tay đeo nhẫn trên nền váy cưới trắng" sizes="(min-width: 900px) 36vw, 90vw" /></div>
+      <div>
+        <p class="eyebrow eyebrow--line">Cách 2 · Đơn giản</p>
+        <h2 id="string-title">Đo bằng <em>sợi chỉ</em> hoặc dải giấy</h2>
+        <ol class="string__steps" role="list">
+          <li><b>Quấn</b>Quấn một vòng sợi chỉ (hoặc dải giấy rộng 5 mm) quanh khớp ngón tay muốn đeo nhẫn — vừa khít, không quá chặt.</li>
+          <li><b>Đánh dấu</b>Dùng bút đánh dấu điểm giao nhau, đảm bảo vòng chỉ vẫn trượt qua được đốt ngón tay.</li>
+          <li><b>Đo &amp; tra</b>Đo chiều dài sợi chỉ bằng thước (mm) và nhập vào ô dưới đây.</li>
+        </ol>
+        <form class="string__calc" data-string-calc novalidate>
+          <label class="field"><span>Chu vi đo được (mm)</span><input class="input" type="number" inputmode="decimal" min="40" max="75" step="0.5" placeholder="VD: 52" data-circ /></label>
+          <output class="string__out" data-circ-out>Nhập chu vi để xem ni tay của bạn</output>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bảng quy đổi -->
+  <section class="section" aria-labelledby="chart-title">
+    <div class="container--narrow">
+      <div class="section-head section-head--center"><p class="eyebrow">Cách 3 · Tra cứu</p><h2 id="chart-title">Bảng quy đổi <em>ni tay</em></h2></div>
+      <div class="table-wrap">
+        <table class="size-table">
+          <thead><tr><th scope="col">Ni (VN)</th><th scope="col">Chu vi (mm)</th><th scope="col">Đường kính (mm)</th><th scope="col">Size US</th></tr></thead>
+          <tbody>{rows.map((r) => <tr data-ni={r.ni}><th scope="row">{r.ni}</th><td>{r.circumference}</td><td>{r.diameter.toFixed(1)}</td><td>{r.us}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <p class="tiny muted center" style="margin-top:1rem">Quy ước phổ biến tại Việt Nam: ni ≈ chu vi lòng nhẫn (mm) − 40. Kết quả mang tính tham khảo.</p>
+    </div>
+  </section>
+
+  <section class="section--tight section--cream" aria-labelledby="faq-title">
+    <div class="container--narrow accordion">
+      <h2 id="faq-title" style="font-size:var(--fs-3)">Câu hỏi thường gặp</h2>
+      {faq.map((f) => <details><summary>{f.q}<span class="plus"></span></summary><div class="acc-body"><p>{f.a}</p></div></details>)}
+      <div class="center" style="margin-top:2.4rem"><a class="btn" href="/dat-lich-hen/?dich-vu=do-ni">Đo ni miễn phí tại showroom</a></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { initSizer } from '../scripts/pages/sizer';
+  initSizer();
+</script>
+
+<style is:global>
+  .sizer { display: grid; gap: 2.5rem; align-items: start; }
+  @media (min-width: 960px) { .sizer { grid-template-columns: 0.9fr 1.1fr; gap: 5rem; } }
+  .sizer__steps { list-style: none; display: grid; gap: 0.9rem; margin: 1.8rem 0; }
+  .sizer__steps li { display: flex; align-items: center; gap: 0.9rem; color: var(--c-muted); transition: color 0.3s; }
+  .sizer__steps li span { width: 34px; height: 34px; flex: none; border-radius: 50%; border: 1px solid var(--c-line-2); display: grid; place-items: center; font-family: var(--ff-serif); transition: background-color 0.3s, color 0.3s; }
+  .sizer__steps li.is-active { color: var(--c-ink); }
+  .sizer__steps li.is-active span { background: var(--c-ink); color: #fff; border-color: var(--c-ink); }
+  .sizer__panel { background: #fff; border: 1px solid var(--c-line); padding: clamp(1.2rem, 3vw, 2rem); }
+  .sizer__pane { display: grid; gap: 1.2rem; }
+  .sizer__hint { display: flex; gap: 0.7rem; align-items: flex-start; margin: 0; font-size: var(--fs-sm); color: var(--c-ink-2); }
+  .sizer__hint svg { width: 20px; height: 20px; flex: none; color: var(--c-gold-dark); margin-top: 2px; }
+  .sizer__canvas { display: grid; place-items: center; min-height: 260px; background: repeating-linear-gradient(45deg, #f7f7f7, #f7f7f7 10px, #f1f1f1 10px, #f1f1f1 20px); overflow: hidden; }
+  .sizer__card { position: relative; border: 2px dashed var(--c-gold-dark); border-radius: 10px; display: grid; align-content: space-between; padding: 6% 7%; color: var(--c-gold-dark); font-size: 0.6rem; letter-spacing: 0.2em; background: rgba(255, 255, 255, 0.6); transition: width 0.05s, height 0.05s; }
+  .sizer__card i { width: 16%; aspect-ratio: 1.3; border-radius: 3px; background: linear-gradient(135deg, #d6c6a8, #9c8462); }
+  .sizer__circle { position: relative; border-radius: 50%; border: 2px solid var(--c-gold); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.08); display: grid; place-items: center; }
+  .sizer__circle::after { content: ''; position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--c-gold); }
+  .sizer__circle span { position: absolute; top: calc(100% + 0.6rem); white-space: nowrap; font-size: var(--fs-xs); color: var(--c-muted); }
+  .sizer__canvas--ring { min-height: 300px; }
+  .sizer__range { display: grid; gap: 0.5rem; }
+  .sizer__range input { width: 100%; accent-color: var(--c-gold-dark); }
+  .sizer__result { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--c-line); border: 1px solid var(--c-line); text-align: center; }
+  .sizer__result div { background: var(--c-bg); padding: 1rem 0.5rem; display: grid; gap: 0.2rem; }
+  .sizer__result b { font-family: var(--ff-serif); font-weight: 300; font-size: 2rem; line-height: 1.1; }
+  .sizer__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  @media (max-width: 480px) { .sizer__actions { grid-template-columns: 1fr; } }
+  .string { display: grid; gap: 2.5rem; align-items: center; }
+  @media (min-width: 900px) { .string { grid-template-columns: 0.8fr 1fr; gap: 5rem; } }
+  .string__steps { list-style: none; counter-reset: s; display: grid; gap: 1.2rem; margin: 1.6rem 0 2rem; }
+  .string__steps li { counter-increment: s; display: grid; grid-template-columns: 2.6rem 1fr; gap: 0 0.8rem; color: var(--c-ink-2); font-size: 0.95rem; }
+  .string__steps li::before { content: '0' counter(s); grid-row: span 2; font-family: var(--ff-serif); font-size: 1.6rem; color: var(--c-gold-dark); line-height: 1; }
+  .string__steps b { font-weight: 500; color: var(--c-ink); }
+  .string__calc { display: grid; grid-template-columns: minmax(0, 220px) 1fr; gap: 1.2rem; align-items: end; }
+  @media (max-width: 560px) { .string__calc { grid-template-columns: 1fr; } }
+  .string__calc .field span { font-size: var(--fs-xxs); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 500; }
+  .string__out { min-height: 52px; display: flex; align-items: center; padding: 0 1rem; background: var(--c-bg); border: 1px solid var(--c-line); font-size: var(--fs-sm); }
+  .string__out b { font-family: var(--ff-serif); font-size: 1.4rem; font-weight: 400; margin: 0 0.3rem; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--c-line); }
+  .size-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); text-align: center; }
+  .size-table th, .size-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--c-line); }
+  .size-table thead th { font-size: var(--fs-xxs); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 500; background: var(--c-bg-2); }
+  .size-table tbody th { font-family: var(--ff-serif); font-weight: 400; font-size: 1.05rem; }
+  .size-table tbody tr:hover, .size-table tr.is-mine { background: #f3f2f0; }
+  .size-table tr.is-mine th::after { content: ' ★'; color: var(--c-gold-dark); }
+</style>

@@ -1,0 +1,20 @@
+---
+import { bannerUrl } from '../lib/catalog';
+interface Props { banner: string; eyebrow?: string; title: string; intro?: string; alt?: string }
+const { banner, eyebrow, title, intro, alt = '' } = Astro.props;
+---
+<section class="page-hero">
+  <div class="page-hero__media">
+    <img src={bannerUrl(banner, 1920)} srcset={`${bannerUrl(banner, 960)} 960w, ${bannerUrl(banner, 1920)} 1920w`} sizes="100vw" width="1920" height="800" alt={alt} fetchpriority="high" decoding="async" />
+  </div>
+  <div class="page-hero__content">
+    <div class="container">
+      <div>
+        {eyebrow && <p class="eyebrow eyebrow--line">{eyebrow}</p>}
+        <h1 set:html={title} />
+        {intro && <p>{intro}</p>}
+        <slot />
+      </div>
+    </div>
+  </div>
+</section>

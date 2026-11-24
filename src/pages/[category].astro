@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Listing from '../components/Listing.astro';
+import SeoBlock from '../components/SeoBlock.astro';
+import { CATEGORIES, type Category } from '../data/categories';
+import { byCategory } from '../data/products';
+import { breadcrumbLd, faqLd, itemListLd } from '../lib/seo';
+
+export function getStaticPaths() {
+  return CATEGORIES.map((c) => ({ params: { category: c.key }, props: { cat: c } }));
+}
+const { cat } = Astro.props as { cat: Category };
+const products = byCategory(cat.key as any).sort((a, b) => b.sold - a.sold);
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: cat.name }];
+const site = Astro.site!;
+const ld: Record<string, unknown>[] = [breadcrumbLd(crumbs, site), itemListLd(products, site, cat.h1)];
+if (cat.faq) ld.push(faqLd(cat.faq));
+---
+<Base title={cat.title} description={cat.description} image={`/images/og/${cat.banner}.jpg`} jsonld={ld}>
+  <PageHero banner={cat.banner} eyebrow={cat.eyebrow} title={cat.h1} intro={cat.intro} alt={cat.h1} />
+  <Listing products={products} filters={cat.filters} quick={cat.quick} crumbs={crumbs} emptyBuilder={cat.key === 'nhan-cau-hon'} />
+  <SeoBlock heading={cat.seo.heading} paragraphs={cat.seo.paragraphs} faq={cat.faq} />
+</Base>

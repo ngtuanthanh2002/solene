@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { POPULAR_KEYWORDS } from '../data/nav';
+---
+<Base title="Tìm kiếm" description="Tìm kiếm nhẫn cầu hôn, nhẫn cưới, kim cương và trang sức tại Solène." noindex>
+  <section class="container search-page">
+    <header class="page-title" style="padding-bottom:1.5rem">
+      <p class="eyebrow">Tìm kiếm</p>
+      <h1 data-sp-title>Bạn đang tìm <em>điều gì?</em></h1>
+    </header>
+    <form class="sp-form" action="/tim-kiem/" method="get" role="search" data-sp-form>
+      <Icon name="search" />
+      <label for="sp-q" class="sr-only">Từ khóa</label>
+      <input id="sp-q" name="q" type="search" placeholder="Nhẫn halo, vàng hồng, 5.4 ly…" autocomplete="off" data-sp-input />
+      <button class="btn btn--sm" type="submit">Tìm</button>
+    </form>
+    <div class="chips sp-chips">{POPULAR_KEYWORDS.map((k) => <a class="chip" href={`/tim-kiem/?q=${encodeURIComponent(k)}`}>{k}</a>)}</div>
+    <p class="muted center" data-sp-count></p>
+    <div class="product-grid product-grid--4" data-sp-grid></div>
+    <div class="empty-state" data-sp-empty hidden>
+      <Icon name="search" /><h2>Không tìm thấy kết quả</h2>
+      <p class="muted">Thử từ khóa khác, hoặc để Solène tư vấn riêng cho bạn.</p>
+      <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap"><a class="btn" href="/dat-lich-hen/">Đặt lịch tư vấn</a><a class="btn btn--outline" href="/thiet-ke-nhan/">Thiết kế nhẫn riêng</a></div>
+    </div>
+  </section>
+</Base>
+<script>
+  import { loadProducts, searchProducts } from '../scripts/catalog-client';
+  import { saveRecentSearch } from '../scripts/search';
+  import { productCardHTML } from '../lib/card';
+  import { escapeHTML } from '../lib/format';
+  import { syncWishButtons } from '../scripts/cart-ui';
+  import { markLoadedImages, qs } from '../scripts/ui';
+
+  const q = (new URLSearchParams(location.search).get('q') || '').trim();
+  const input = qs<HTMLInputElement>('[data-sp-input]')!;
+  input.value = q;
+  const grid = qs('[data-sp-grid]')!;
+  if (q) {
+    saveRecentSearch(q);
+    document.title = `Kết quả cho “${q}” | Solène Fine Jewelry`;
+    qs('[data-sp-title]')!.innerHTML = `Kết quả cho <em>“${escapeHTML(q)}”</em>`;
+    loadProducts().then((all) => {
+      const found = searchProducts(all, q);
+      qs('[data-sp-count]')!.textContent = found.length ? `${found.length} thiết kế phù hợp` : '';
+      qs('[data-sp-empty]')!.hidden = !!found.length;
+      grid.innerHTML = found.map((p, i) => productCardHTML(p, { index: i })).join('');
+      syncWishButtons(grid);
+      markLoadedImages(grid);
+    });
+  } else input.focus();
+</script>
+<style is:global>
+  .search-page { padding-bottom: var(--section); }
+  .sp-form { display: flex; align-items: center; gap: 0.8rem; max-width: 720px; margin: 0 auto 1.2rem; padding: 0.4rem 0.4rem 0.4rem 1.2rem; border: 1px solid var(--c-line-2); background: #fff; }
+  .sp-form > svg { width: 20px; height: 20px; color: var(--c-gold-dark); flex: none; }
+  .sp-form input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 1.05rem; padding: 0.7rem 0; }
+  .sp-form input:focus { outline: none; }
+  .sp-chips { justify-content: center; margin-bottom: 2.4rem; }
+</style>

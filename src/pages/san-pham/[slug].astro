@@ -1,0 +1,268 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { PRODUCTS, type Product } from '../../data/products';
+import { CATEGORIES } from '../../data/categories';
+import { COLLECTIONS } from '../../data/collections';
+import { SAMPLE_REVIEWS } from '../../data/content';
+import { BADGES, METALS, TYPES, imageUrl, imageSrcset } from '../../lib/catalog';
+import { productFormHTML } from '../../lib/options';
+import { toCard } from '../../lib/card';
+import { formatDate } from '../../lib/format';
+import { icon } from '../../lib/icons';
+import { breadcrumbLd } from '../../lib/seo';
+import { SITE } from '../../config';
+
+export function getStaticPaths() {
+  return PRODUCTS.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+const { p } = Astro.props as { p: Product };
+const cat = CATEGORIES.find((c) => c.key === p.category)!;
+const col = COLLECTIONS.find((c) => c.slug === p.collection);
+const EXTRA: Record<string, string> = { 'nhan-cau-hon': 'life-ring-box', 'nhan-cuoi': 'life-wedding-hands', 'trang-suc': 'ed-gold-stilllife', 'kim-cuong': 'dia-row', 'trang-suc-cao-cap': 'ed-jeweler-loupe', 'phu-kien': 'acc-jewelry-box' };
+const gallery = [...new Set([...p.images, EXTRA[p.category]])].slice(0, 4);
+const optData = { ...toCard(p), variants: p.variants, leadTime: p.leadTime };
+const related = PRODUCTS.filter((x) => x.id !== p.id && x.category === p.category).sort((a, b) => (b.collection === p.collection ? 1 : 0) - (a.collection === p.collection ? 1 : 0) || b.sold - a.sold).slice(0, 4);
+const reviews = SAMPLE_REVIEWS.filter((r) => r.categories.includes(p.category)).slice(0, 3);
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: cat.name, href: `/${cat.key}/` }, { label: p.name }];
+const site = Astro.site!;
+const url = new URL(`/san-pham/${p.slug}/`, site).href;
+const metalText = p.metals.map((m) => METALS[m].label).join(', ');
+const description = `${p.name} — ${p.subtitle}. ${p.description}`.slice(0, 300);
+const prices = p.variants ? p.variants.options.map((o) => o.price) : [p.price];
+const productLd = {
+  '@context': 'https://schema.org', '@type': 'Product', name: p.name, description: p.description, sku: p.id, mpn: p.id,
+  image: gallery.slice(0, 3).map((k) => new URL(imageUrl(k, 1200), site).href),
+  brand: { '@type': 'Brand', name: 'Solène' }, category: TYPES[p.type] || cat.name,
+  ...(p.metals.length ? { material: metalText } : {}),
+  offers: p.variants
+    ? { '@type': 'AggregateOffer', priceCurrency: 'VND', lowPrice: Math.min(...prices), highPrice: Math.max(...prices), offerCount: prices.length, availability: 'https://schema.org/InStock', url }
+    : { '@type': 'Offer', priceCurrency: 'VND', price: p.price, availability: 'https://schema.org/InStock', itemCondition: 'https://schema.org/NewCondition', url, seller: { '@type': 'Organization', name: SITE.legalName } },
+};
+const stars = (r: number) => Array.from({ length: 5 }, (_, i) => `<span style="opacity:${i < Math.round(r) ? 1 : 0.2}">${icon('star')}</span>`).join('');
+const badge = p.compareAt ? `Ưu đãi −${Math.round((1 - p.price / p.compareAt) * 100)}%` : p.badges?.length ? BADGES[p.badges[0]] : '';
+---
+<Base title={`${p.name} — ${p.subtitle}`} description={description} image={`/images/og/${p.images[0]}.jpg`} imageAlt={`${p.name} — ${p.subtitle}`} ogType="product" jsonld={[productLd, breadcrumbLd(crumbs, site)]} bodyClass="page-product">
+  <link slot="head" rel="preload" as="image" href={imageUrl(gallery[0], 800)} imagesrcset={imageSrcset(gallery[0])} imagesizes="(min-width: 1000px) 55vw, 100vw" fetchpriority="high" />
+  <meta slot="head" property="product:price:amount" content={String(p.price)} />
+  <meta slot="head" property="product:price:currency" content="VND" />
+
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+
+  <section class="container pdp" data-pdp>
+    <div class="pdp__gallery">
+      <div class="pdp__stage">
+        <div class="pdp__slides" data-slides tabindex="0" aria-label="Thư viện ảnh, vuốt để xem thêm">
+          {gallery.map((k, i) => (
+            <figure class="pdp__slide" data-slide={i}>
+              <img src={imageUrl(k, 800)} srcset={imageSrcset(k)} sizes={i === 0 ? '(min-width: 1000px) 55vw, 100vw' : '(min-width: 1000px) 28vw, 100vw'} width="1200" height="1500" alt={i === 0 ? `${p.name} — ${p.subtitle}` : `${p.name} — ảnh ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} decoding="async" data-zoom={imageUrl(k, 1200)} />
+            </figure>
+          ))}
+        </div>
+        {badge && <span class="pdp__badge">{badge}</span>}
+        <div class="pdp__dots" aria-hidden="true">{gallery.map((_, i) => <span class:list={{ 'is-active': i === 0 }}></span>)}</div>
+      </div>
+    </div>
+
+    <div class="pdp__info">
+      <div class="pdp__sticky">
+        <p class="eyebrow pdp__eyebrow">{col ? <a href={`/bo-suu-tap/${col.slug}/`}>{col.name}</a> : TYPES[p.type]}</p>
+        <h1 class="pdp__title">{p.name}</h1>
+        <p class="pdp__sub">{p.subtitle}</p>
+
+        <div class="pdp__form" set:html={productFormHTML(optData, 'pd')} />
+
+        <div class="pdp__links">
+          <button type="button" class="wish-btn" data-wish={p.id} data-name={p.name} aria-pressed="false"><Icon name="heart" /><span>Yêu thích</span></button>
+          <a href="/dat-lich-hen/"><Icon name="calendar" /><span>Xem tại showroom</span></a>
+        </div>
+
+        <div class="accordion pdp__acc">
+          <details>
+            <summary>Mô tả<span class="plus"></span></summary>
+            <div class="acc-body"><p>{p.description}</p>{p.engravable && <p style="margin:0">Khắc chữ laser miễn phí ở mặt trong — tối đa 20 ký tự, hỗ trợ tiếng Việt có dấu.</p>}</div>
+          </details>
+          <details>
+            <summary>Thông số<span class="plus"></span></summary>
+            <div class="acc-body"><dl class="spec"><dt>Mã sản phẩm</dt><dd>{p.id}</dd>{p.details.map(([k, v]) => <Fragment><dt>{k}</dt><dd>{v}</dd></Fragment>)}{p.metals.length > 0 && <Fragment><dt>Chất liệu có sẵn</dt><dd>{metalText}</dd></Fragment>}</dl></div>
+          </details>
+          <details>
+            <summary>Giao hàng &amp; đổi trả<span class="plus"></span></summary>
+            <div class="acc-body">
+              <p>{p.leadTime}. Giao miễn phí toàn quốc, bảo hiểm 100% giá trị, đóng trong hộp quà Solène kèm thiệp viết tay.</p>
+              <p style="margin:0">Đổi mẫu trong 15 ngày với sản phẩm chưa khắc chữ, thu đổi kim cương trọn đời. <a class="link-inline" href="/chinh-sach/doi-tra/">Xem chính sách</a></p>
+            </div>
+          </details>
+          <details>
+            <summary>Bảo hành &amp; chăm sóc<span class="plus"></span></summary>
+            <div class="acc-body"><p style="margin:0">Bảo hành trọn đời: làm sạch, đánh bóng và kiểm tra chấu miễn phí tại showroom. Nên tháo trang sức khi tập luyện, bơi lội hoặc dùng hóa chất, và bảo quản riêng từng món trong hộp.</p></div>
+          </details>
+        </div>
+
+        <p class="pdp__help">Cần tư vấn? Gọi <a href={SITE.phoneHref}>{SITE.phone}</a> hoặc <a href="/lien-he/">liên hệ chuyên viên</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Đánh giá -->
+  <section class="pdp-reviews" id="danh-gia" aria-labelledby="rv-title">
+    <div class="container container--narrow">
+      <div class="pdp-reviews__head">
+        <div>
+          <h2 id="rv-title">Đánh giá</h2>
+          <p class="rating-line"><span class="stars" set:html={stars(p.rating)} /><span>{p.rating.toFixed(1)} / 5 · {p.reviews} đánh giá</span></p>
+        </div>
+        <button class="btn btn--outline btn--sm" type="button" data-review-toggle aria-expanded="false" aria-controls="review-form">Viết đánh giá</button>
+      </div>
+
+      <form class="review-form" id="review-form" data-review-form data-product-id={p.id} hidden novalidate>
+        <div class="field"><span class="label">Chấm điểm</span>
+          <div class="star-input" role="radiogroup" aria-label="Số sao">
+            {[5, 4, 3, 2, 1].map((n) => <Fragment><input type="radio" name="rating" id={`star-${n}`} value={n} checked={n === 5} /><label for={`star-${n}`} title={`${n} sao`} set:html={icon('star')} /></Fragment>)}
+          </div>
+        </div>
+        <div class="form-grid form-grid--2">
+          <div class="field"><label for="rv-name">Tên hiển thị</label><input class="input" id="rv-name" name="name" required maxlength="40" /></div>
+          <div class="field"><label for="rv-title">Tiêu đề</label><input class="input" id="rv-title" name="title" required maxlength="80" /></div>
+        </div>
+        <div class="field"><label for="rv-text">Nội dung</label><textarea class="textarea" id="rv-text" name="text" required maxlength="800" placeholder="Cảm nhận của bạn về sản phẩm, dịch vụ…"></textarea><span class="field-error" data-error-for="text"></span></div>
+        <div><button class="btn" type="submit">Gửi đánh giá</button></div>
+      </form>
+
+      <div class="reviews__list" data-reviews-list>
+        {reviews.map((r) => (
+          <article class="review">
+            <div class="review__head"><span class="stars" set:html={stars(r.rating)} /><time datetime={r.date}>{formatDate(r.date)}</time></div>
+            <h3 class="review__title">{r.title}</h3>
+            <p>{r.text}</p>
+            <p class="review__by">{r.name} · {r.city}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section pdp-more" aria-labelledby="rel-title">
+      <div class="container">
+        <div class="section-head section-head--center"><h2 id="rel-title">Có thể bạn cũng thích</h2></div>
+        <div class="product-grid product-grid--4">{related.map((r, i) => <ProductCard product={r} index={i} />)}</div>
+        <div class="center" style="margin-top:3rem"><a class="link" href={`/${cat.key}/`}>Xem tất cả {cat.name.toLowerCase()}</a></div>
+      </div>
+    </section>
+  )}
+
+  <section class="section pdp-more" data-recent-section hidden aria-labelledby="recent-title">
+    <div class="container">
+      <div class="section-head section-head--center"><h2 id="recent-title">Đã xem gần đây</h2></div>
+      <div class="product-grid product-grid--4" data-recent-grid></div>
+    </div>
+  </section>
+
+  <div class="sticky-atc" data-sticky-atc aria-hidden="true">
+    <img src={imageUrl(p.images[0], 400)} alt="" width="48" height="60" />
+    <div class="sticky-atc__txt"><b>{p.name}</b><span data-sticky-price></span></div>
+    <button class="btn btn--sm" type="button" data-sticky-add>Thêm vào giỏ</button>
+  </div>
+
+  <div class="modal lightbox" data-modal="lightbox" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__dialog lightbox__dialog" role="dialog" aria-modal="true" aria-label="Xem ảnh lớn" style="--w:1100px" tabindex="-1">
+      <button class="icon-btn modal__close" type="button" data-modal-close aria-label="Đóng"><Icon name="close" /></button>
+      <img class="lightbox__img" alt="" data-lightbox-img />
+      <button class="icon-btn lightbox__nav lightbox__nav--prev" type="button" data-lightbox-prev aria-label="Ảnh trước"><Icon name="chevron-left" /></button>
+      <button class="icon-btn lightbox__nav lightbox__nav--next" type="button" data-lightbox-next aria-label="Ảnh sau"><Icon name="chevron-right" /></button>
+      <p class="lightbox__count" data-lightbox-count></p>
+    </div>
+  </div>
+
+  <script type="application/json" id="product-data" set:html={JSON.stringify({ ...optData, gallery }).replace(/</g, '\\u003c')} />
+</Base>
+
+<script>
+  import { initProductPage } from '../../scripts/pages/product';
+  initProductPage();
+</script>
+
+<style is:global>
+  /* ── Bố cục: ảnh lớn bên trái, thông tin gọn bên phải ── */
+  .pdp { display: grid; gap: 2.25rem; padding-bottom: clamp(4rem, 8vw, 7rem); }
+  @media (min-width: 1000px) {
+    .pdp { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(3rem, 6vw, 7rem); align-items: start; padding-top: 0.5rem; }
+  }
+  .pdp__gallery { min-width: 0; }
+  .pdp__stage { position: relative; min-width: 0; }
+  .pdp__slides { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .pdp__slides::-webkit-scrollbar { display: none; }
+  .pdp__slide { scroll-snap-align: start; aspect-ratio: 4 / 5; overflow: hidden; margin: 0; cursor: zoom-in; background: var(--c-bg-2); }
+  .pdp__slide img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.35s var(--ease); }
+  .pdp__slide.is-zoom img { transform: scale(1.8); transition: transform 0.15s linear; }
+  .pdp__badge { position: absolute; top: 1rem; left: 1.1rem; font-size: 0.625rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-ink); pointer-events: none; }
+  .pdp__dots { position: absolute; left: 50%; bottom: 1rem; transform: translateX(-50%); display: flex; gap: 6px; }
+  .pdp__dots span { width: 18px; height: 1px; background: rgba(0, 0, 0, 0.2); transition: background-color 0.3s; }
+  .pdp__dots span.is-active { background: var(--c-ink); }
+  @media (max-width: 999px) {
+    .pdp__gallery { margin-inline: calc(-1 * var(--gutter)); }
+    .breadcrumbs { padding-block: 0.9rem; }
+  }
+  @media (min-width: 1000px) {
+    /* Desktop: lưới ảnh — ảnh đầu lớn, các ảnh sau xếp đôi */
+    .pdp__slides { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: 1fr 1fr; gap: 0.5rem; overflow: visible; scroll-snap-type: none; }
+    .pdp__slide:first-child, .pdp__slide:last-child:nth-child(even) { grid-column: 1 / -1; }
+    .pdp__dots { display: none; }
+  }
+
+  .pdp__info { min-width: 0; }
+  .pdp__sticky { max-width: 440px; }
+  @media (min-width: 1000px) { .pdp__sticky { position: sticky; top: calc(var(--header-h) + 2rem); padding-top: 1rem; } }
+  .pdp__eyebrow { margin-bottom: 0.9rem; }
+  .pdp__title { font-size: clamp(1.6rem, 1.35rem + 0.8vw, 2.1rem); font-weight: 300; line-height: 1.2; margin: 0 0 0.45rem; }
+  .pdp__sub { color: var(--c-muted); font-size: 0.875rem; margin: 0 0 1.6rem; }
+  .pdp__form .pform { gap: 1.75rem; }
+  .pdp__links { display: flex; flex-wrap: wrap; gap: 0.75rem 2rem; margin: 1.75rem 0 2.5rem; }
+  .pdp__links > * { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--fs-xxs); font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; transition: opacity 0.3s; }
+  .pdp__links > *:hover { opacity: 0.6; }
+  .pdp__links svg { width: 16px; height: 16px; }
+  .pdp__acc { border-top: 1px solid var(--c-line); }
+  .pdp__help { margin: 1.75rem 0 0; font-size: var(--fs-xs); color: var(--c-muted); }
+  .pdp__help a { color: var(--c-ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--c-line-2); }
+
+  /* ── Đánh giá: gọn, một cột ── */
+  .pdp-reviews { padding-block: clamp(4rem, 8vw, 6.5rem); border-top: 1px solid var(--c-line); }
+  .pdp-reviews__head { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .pdp-reviews__head h2 { margin: 0 0 0.5rem; }
+  .review-form { display: grid; gap: 1.1rem; margin: 0 0 2.5rem; padding: 1.75rem; background: var(--c-bg-2); }
+  .star-input { display: inline-flex; flex-direction: row-reverse; justify-content: flex-end; gap: 0.2rem; }
+  .star-input input { position: absolute; opacity: 0; pointer-events: none; }
+  .star-input label { width: 26px; height: 26px; cursor: pointer; color: var(--c-line-2); transition: color 0.2s; }
+  .star-input label svg { width: 100%; height: 100%; }
+  .star-input input:checked ~ label, .star-input label:hover, .star-input label:hover ~ label { color: var(--c-ink); }
+  .star-input input:focus-visible + label { outline: 1px solid var(--c-ink); outline-offset: 2px; }
+  .reviews__list { display: grid; border-top: 1px solid var(--c-line); }
+  .review { padding: 1.75rem 0; border-bottom: 1px solid var(--c-line); }
+  .review__head { display: flex; justify-content: space-between; align-items: center; font-size: var(--fs-xs); color: var(--c-muted); margin-bottom: 0.75rem; }
+  .review__title { font-size: 0.95rem; font-weight: 500; margin: 0 0 0.4rem; letter-spacing: 0; }
+  .review p { color: var(--c-ink-2); font-size: 0.875rem; }
+  .review__by { font-size: var(--fs-xs); color: var(--c-muted) !important; margin: 0; }
+  .review--new { animation: fadeUp 0.6s var(--ease-out); }
+
+  .pdp-more { border-top: 1px solid var(--c-line); }
+
+  .sticky-atc { position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem var(--gutter) calc(0.7rem + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--c-line); transform: translateY(110%); transition: transform 0.45s var(--ease-out); }
+  .sticky-atc.is-visible { transform: none; }
+  .sticky-atc img { width: 40px; height: 50px; object-fit: cover; background: var(--c-bg-2); }
+  .sticky-atc__txt { flex: 1; min-width: 0; display: grid; font-size: var(--fs-xs); color: var(--c-muted); }
+  .sticky-atc__txt b { font-weight: 500; font-size: 0.85rem; color: var(--c-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @media (min-width: 1000px) { .sticky-atc { display: none; } }
+  .page-product .fab-stack { bottom: calc(5.2rem + env(safe-area-inset-bottom)); }
+  @media (min-width: 1000px) { .page-product .fab-stack { bottom: calc(1.25rem + env(safe-area-inset-bottom)); } }
+
+  .lightbox__dialog { background: #fff; display: grid; place-items: center; }
+  .lightbox__img { max-width: 100%; max-height: calc(100dvh - 4rem); object-fit: contain; }
+  .lightbox__nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.9); }
+  .lightbox__nav--prev { left: 0.8rem; }
+  .lightbox__nav--next { right: 0.8rem; }
+  .lightbox__count { position: absolute; bottom: 0.6rem; left: 50%; transform: translateX(-50%); margin: 0; font-size: var(--fs-xs); background: rgba(255, 255, 255, 0.9); padding: 0.2rem 0.7rem; }
+</style>

@@ -1,0 +1,106 @@
+---
+/** Form đăng nhập / đăng ký / quên mật khẩu — dùng trong modal và trang Tài khoản. */
+import Icon from './Icon.astro';
+import { GOOGLE_G } from '../lib/icons';
+interface Props { prefix: string; heading?: boolean }
+const { prefix: p, heading = true } = Astro.props;
+---
+<div class="auth" data-auth-root>
+  {heading && (
+    <div class="auth__brand">
+      <span class="eyebrow">Solène Circle</span>
+      <p class="serif" id={`${p}-title`}>Chào mừng quý khách</p>
+      <p class="small muted" style="margin:0">Lưu sản phẩm yêu thích, theo dõi đơn hàng và lịch hẹn riêng.</p>
+    </div>
+  )}
+
+  <div class="auth__tabs" role="tablist" data-auth-tabs>
+    <button class="auth__tab" type="button" role="tab" id={`${p}-tab-login`} aria-controls={`${p}-login`} aria-selected="true" data-auth-tab="login">Đăng nhập</button>
+    <button class="auth__tab" type="button" role="tab" id={`${p}-tab-register`} aria-controls={`${p}-register`} aria-selected="false" data-auth-tab="register">Tạo tài khoản</button>
+  </div>
+
+  <!-- Đăng nhập -->
+  <form class="auth__panel" id={`${p}-login`} role="tabpanel" aria-labelledby={`${p}-tab-login`} data-auth-panel="login" data-auth-form="login" novalidate>
+    <div class="gbtn-wrap" data-google-btn></div>
+    <div class="auth__or">hoặc bằng email</div>
+    <div class="form-alert" data-auth-alert hidden></div>
+    <div class="field">
+      <label for={`${p}-login-email`}>Email</label>
+      <input class="input" id={`${p}-login-email`} name="email" type="email" autocomplete="email" placeholder="ten@email.com" required />
+      <span class="field-error" data-error-for="email"></span>
+    </div>
+    <div class="field">
+      <label for={`${p}-login-pw`}>Mật khẩu</label>
+      <div class="pw-wrap">
+        <input class="input" id={`${p}-login-pw`} name="password" type="password" autocomplete="current-password" placeholder="••••••••" required />
+        <button class="pw-toggle" type="button" data-pw-toggle aria-label="Hiện mật khẩu"><Icon name="eye" /></button>
+      </div>
+      <span class="field-error" data-error-for="password"></span>
+    </div>
+    <div class="auth__row">
+      <label class="check"><input type="checkbox" name="remember" checked /><span class="box"></span>Ghi nhớ đăng nhập</label>
+      <button type="button" class="link-inline small" data-auth-tab="forgot">Quên mật khẩu?</button>
+    </div>
+    <button class="btn btn--block" type="submit">Đăng nhập</button>
+    <p class="auth__legal">Chưa có tài khoản? <button type="button" class="link-inline" data-auth-tab="register">Tạo tài khoản mới</button></p>
+  </form>
+
+  <!-- Đăng ký -->
+  <form class="auth__panel" id={`${p}-register`} role="tabpanel" aria-labelledby={`${p}-tab-register`} data-auth-panel="register" data-auth-form="register" novalidate hidden>
+    <div class="gbtn-wrap" data-google-btn></div>
+    <div class="auth__or">hoặc đăng ký bằng email</div>
+    <div class="form-alert" data-auth-alert hidden></div>
+    <div class="field">
+      <label for={`${p}-reg-name`}>Họ và tên <span class="req">*</span></label>
+      <input class="input" id={`${p}-reg-name`} name="name" type="text" autocomplete="name" placeholder="Nguyễn Minh Anh" required />
+      <span class="field-error" data-error-for="name"></span>
+    </div>
+    <div class="form-grid form-grid--2">
+      <div class="field">
+        <label for={`${p}-reg-email`}>Email <span class="req">*</span></label>
+        <input class="input" id={`${p}-reg-email`} name="email" type="email" autocomplete="email" placeholder="ten@email.com" required />
+        <span class="field-error" data-error-for="email"></span>
+      </div>
+      <div class="field">
+        <label for={`${p}-reg-phone`}>Điện thoại</label>
+        <input class="input" id={`${p}-reg-phone`} name="phone" type="tel" autocomplete="tel" placeholder="09xx xxx xxx" inputmode="tel" />
+        <span class="field-error" data-error-for="phone"></span>
+      </div>
+    </div>
+    <div class="field">
+      <label for={`${p}-reg-pw`}>Mật khẩu <span class="req">*</span></label>
+      <div class="pw-wrap">
+        <input class="input" id={`${p}-reg-pw`} name="password" type="password" autocomplete="new-password" placeholder="Tối thiểu 8 ký tự" required data-pw-meter-input />
+        <button class="pw-toggle" type="button" data-pw-toggle aria-label="Hiện mật khẩu"><Icon name="eye" /></button>
+      </div>
+      <div class="pw-meter" data-pw-meter data-score="0" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <span class="field-error" data-error-for="password"></span>
+    </div>
+    <div class="field">
+      <label for={`${p}-reg-pw2`}>Nhập lại mật khẩu <span class="req">*</span></label>
+      <input class="input" id={`${p}-reg-pw2`} name="password2" type="password" autocomplete="new-password" placeholder="••••••••" required />
+      <span class="field-error" data-error-for="password2"></span>
+    </div>
+    <label class="check"><input type="checkbox" name="terms" /><span class="box"></span><span>Tôi đồng ý với <a class="link-inline" href="/chinh-sach/bao-mat/" target="_blank">chính sách bảo mật</a> của Solène</span></label>
+    <span class="field-error" data-error-for="terms"></span>
+    <label class="check"><input type="checkbox" name="news" checked /><span class="box"></span>Nhận thư mời sự kiện &amp; ưu đãi riêng</label>
+    <button class="btn btn--block" type="submit">Tạo tài khoản</button>
+    <p class="auth__legal">Đã có tài khoản? <button type="button" class="link-inline" data-auth-tab="login">Đăng nhập</button></p>
+  </form>
+
+  <!-- Quên mật khẩu -->
+  <form class="auth__panel" data-auth-panel="forgot" data-auth-form="forgot" novalidate hidden>
+    <p class="small muted" style="margin:0">Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.</p>
+    <div class="form-alert" data-auth-alert hidden></div>
+    <div class="field">
+      <label for={`${p}-fg-email`}>Email</label>
+      <input class="input" id={`${p}-fg-email`} name="email" type="email" autocomplete="email" placeholder="ten@email.com" required />
+      <span class="field-error" data-error-for="email"></span>
+    </div>
+    <button class="btn btn--block" type="submit">Gửi liên kết</button>
+    <button type="button" class="link small" data-auth-tab="login" style="justify-self:center"><Icon name="arrow-left" /> Quay lại đăng nhập</button>
+  </form>
+  <template data-google-fallback>
+    <button type="button" class="gbtn-fallback" data-google-fallback-btn><Fragment set:html={GOOGLE_G} />Tiếp tục với Google</button>
+  </template>
+</div>

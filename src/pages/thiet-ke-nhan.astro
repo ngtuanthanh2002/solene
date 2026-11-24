@@ -1,0 +1,226 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import RingIcon from '../components/RingIcon.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { STYLES, SHAPES, METALS, METAL_KEYS, RING_SIZES, sizeInfo } from '../lib/catalog';
+import { QUALITIES, quote, caratToMm } from '../lib/pricing';
+import { ringSVG } from '../lib/ring-svg';
+import { formatVND } from '../lib/format';
+import { breadcrumbLd, faqLd } from '../lib/seo';
+
+const init = { style: 'halo', shape: 'oval', carat: 1, quality: 'cao-cap', metal: 'vang-hong-18k' } as const;
+const q = quote(init);
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Nhẫn cầu hôn', href: '/nhan-cau-hon/' }, { label: 'Thiết kế nhẫn riêng' }];
+const faq = [
+  { q: 'Thiết kế nhẫn riêng mất bao lâu?', a: 'Sau khi xác nhận viên chủ GIA và bản vẽ 3D, nhẫn được chế tác thủ công trong 10–14 ngày làm việc.' },
+  { q: 'Tôi có được xem viên kim cương trước khi chế tác?', a: 'Có. Chuyên viên Solène sẽ gửi ảnh, video và giấy GIA của 2–3 viên phù hợp ngân sách để bạn chọn, hoặc bạn có thể xem trực tiếp tại showroom.' },
+  { q: 'Giá trên công cụ có phải giá cuối cùng?', a: 'Đây là báo giá tham khảo theo bảng giá hiện hành. Giá cuối cùng được xác nhận theo viên kim cương cụ thể bạn chọn, thường chênh lệch không quá 5%.' },
+];
+---
+<Base title="Thiết kế nhẫn cầu hôn của riêng bạn" description="Tự thiết kế nhẫn cầu hôn kim cương: chọn 8 kiểu dáng, 7 dáng viên chủ, carat từ 0.3 đến 3ct và 4 chất liệu quý. Xem trước trực tiếp, báo giá tức thì, chế tác thủ công tại Solène." jsonld={[breadcrumbLd(crumbs, Astro.site!), faqLd(faq)]} bodyClass="page-builder">
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+
+  <section class="container builder" data-builder>
+    <div class="builder__stage">
+      <div class="builder__stage-inner">
+        <div class="builder__glow" aria-hidden="true"></div>
+        <div class="builder__preview" data-preview aria-live="polite">
+          <div class="builder__layer is-active" set:html={ringSVG({ ...init, uid: 'bA', title: 'Xem trước nhẫn' })} />
+          <div class="builder__layer"></div>
+        </div>
+        <p class="builder__caption" data-caption>Halo · Oval · 1.00 ct · Vàng hồng 18K</p>
+        <dl class="builder__facts">
+          <div><dt>Viên chủ</dt><dd data-fact-mm>≈ {caratToMm(1)} ly</dd></div>
+          <div><dt>Kiểm định</dt><dd>GIA</dd></div>
+          <div><dt>Chế tác</dt><dd>10–14 ngày</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="builder__panel">
+      <p class="eyebrow eyebrow--line">Solène Atelier</p>
+      <h1 class="builder__title">Thiết kế nhẫn <em>của riêng bạn</em></h1>
+      <p class="lead">Bốn bước để tạo nên chiếc nhẫn cầu hôn độc nhất — xem trước tức thì, báo giá minh bạch, nghệ nhân chế tác thủ công.</p>
+
+      <form class="steps" data-builder-form novalidate>
+        <fieldset class="step">
+          <legend class="step__title"><span class="step__n">01</span>Kiểu dáng<b data-sum="style">Halo</b></legend>
+          <p class="step__desc" data-style-desc>{STYLES.find((s) => s.key === init.style)!.desc}</p>
+          <div class="opt-grid opt-grid--4">
+            {STYLES.map((s) => (
+              <label class="opt">
+                <input type="radio" name="style" value={s.key} checked={s.key === init.style} data-desc={s.desc} />
+                <span class="opt__box"><span class="opt__ico"><RingIcon style={s.key} strokeWidth={2.8} /></span><span class="opt__label">{s.label}</span></span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend class="step__title"><span class="step__n">02</span>Viên chủ<b data-sum="shape">Oval · 1.00 ct</b></legend>
+          <div class="opt-grid opt-grid--7">
+            {SHAPES.map((s) => (
+              <label class="opt opt--shape">
+                <input type="radio" name="shape" value={s.key} checked={s.key === init.shape} />
+                <span class="opt__box"><span class="opt__ico"><RingIcon shape={s.key} strokeWidth={2.2} /></span><span class="opt__label">{s.label}</span></span>
+              </label>
+            ))}
+          </div>
+          <div class="carat">
+            <div class="carat__head"><label for="carat" class="label">Trọng lượng</label><output for="carat" data-carat-out><b>1.00 ct</b> · ≈ {caratToMm(1)} ly</output></div>
+            <input type="range" id="carat" name="carat" min="0.3" max="3" step="0.05" value="1" data-carat />
+            <div class="carat__chips">{[0.5, 0.75, 1, 1.5, 2].map((c) => <button type="button" class="chip" data-carat-chip={c}>{c.toFixed(2)} ct</button>)}</div>
+          </div>
+          <div class="opt-grid opt-grid--3 quality">
+            {QUALITIES.map((qq) => (
+              <label class="opt opt--text">
+                <input type="radio" name="quality" value={qq.key} checked={qq.key === init.quality} />
+                <span class="opt__box"><b>{qq.label}</b><span class="opt__grade">{qq.grade}</span><small>{qq.desc}</small></span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend class="step__title"><span class="step__n">03</span>Chất liệu<b data-sum="metal">Vàng hồng 18K</b></legend>
+          <div class="metal-picker">
+            {METAL_KEYS.map((m) => (
+              <label class="metal-opt"><input type="radio" name="metal" value={m} checked={m === init.metal} /><span><i style={`background:${METALS[m].swatch}`}></i>{METALS[m].label}</span></label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend class="step__title"><span class="step__n">04</span>Ni tay &amp; khắc chữ</legend>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label for="b-size">Ni tay <span class="req">*</span></label>
+              <select class="select" id="b-size" name="size" required>
+                <option value="">Chọn ni tay</option>
+                {RING_SIZES.map((n) => <option value={n}>Ni {n} · chu vi {sizeInfo(n).circumference} mm</option>)}
+              </select>
+              <span class="field-error" data-error-for="size"></span>
+              <a class="link-inline tiny" href="/huong-dan-do-ni-tay/" target="_blank" rel="noopener">Chưa biết ni? Đo ngay trên màn hình</a>
+            </div>
+            <div class="field">
+              <label for="b-engrave">Khắc chữ (miễn phí)</label>
+              <input class="input" id="b-engrave" name="engraving" maxlength="20" placeholder="VD: Forever · 20.10.26" autocomplete="off" />
+              <div class="engrave__band" data-b-band style={`--band:${METALS[init.metal].swatch}`} aria-hidden="true"><span data-b-engrave>Forever yours</span></div>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="quote" data-quote>
+        <h2 class="quote__title">Báo giá của bạn</h2>
+        <dl class="quote__rows">
+          <div><dt>Vỏ nhẫn <span data-q-setting-label>Halo · Vàng hồng 18K</span></dt><dd data-q-setting>{formatVND(q.setting)}</dd></div>
+          <div><dt>Kim cương chủ <span data-q-center-label>Oval 1.00 ct · F · VS1 · GIA</span></dt><dd data-q-center>{formatVND(q.center)}</dd></div>
+          <div data-q-sides-row hidden><dt>Hai viên đá bên <span>ThreeStone</span></dt><dd data-q-sides>0 ₫</dd></div>
+          <div><dt>Khắc chữ · hộp quà · giấy GIA</dt><dd>Miễn phí</dd></div>
+        </dl>
+        <div class="quote__total"><span>Tổng tạm tính</span><b data-q-total>{formatVND(q.total)}</b></div>
+        <p class="tiny muted" style="margin:.2rem 0 1.2rem">Hoặc trả góp 0% từ <span data-q-month>{formatVND(Math.round(q.total / 12 / 1000) * 1000)}</span>/tháng · 12 tháng</p>
+        <div class="quote__actions">
+          <button class="btn btn--block" type="button" data-builder-add><Icon name="bag" />Thêm vào giỏ hàng</button>
+          <a class="btn btn--outline btn--block" href="/dat-lich-hen/?dich-vu=thiet-ke-rieng" data-builder-appt><Icon name="calendar" />Tư vấn với nhà thiết kế</a>
+          <button class="link small" type="button" data-builder-share style="justify-self:center"><Icon name="chat" />Sao chép liên kết thiết kế</button>
+        </div>
+      </div>
+
+      <div class="accordion builder__faq">
+        {faq.map((f) => <details><summary>{f.q}<span class="plus"></span></summary><div class="acc-body"><p>{f.a}</p></div></details>)}
+      </div>
+    </div>
+  </section>
+
+  <div class="builder-bar" data-builder-bar>
+    <div><span class="tiny muted">Tổng tạm tính</span><b data-q-total-bar>{formatVND(q.total)}</b></div>
+    <button class="btn btn--sm" type="button" data-builder-add>Thêm vào giỏ</button>
+  </div>
+</Base>
+
+<script>
+  import { initBuilder } from '../scripts/pages/builder';
+  initBuilder();
+</script>
+
+<style is:global>
+  .builder { display: grid; gap: 2rem; padding-bottom: var(--section); }
+  @media (min-width: 1000px) { .builder { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(2.5rem, 5vw, 5rem); align-items: start; } }
+  .builder__stage { position: sticky; top: calc(var(--header-h) - 1px); z-index: 5; }
+  .builder__stage-inner { position: relative; display: grid; justify-items: center; padding: 1.2rem 1rem 1.4rem; background: radial-gradient(120% 90% at 50% 40%, #ffffff 0%, #f6f5f3 60%, #eeece8 100%); overflow: hidden; }
+  @media (min-width: 1000px) { .builder__stage { top: calc(var(--header-h) + 1.2rem); } .builder__stage-inner { padding: 3rem 2rem 2.4rem; min-height: min(78vh, 760px); align-content: center; } }
+  .builder__glow { position: absolute; top: 12%; width: 70%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 65%); pointer-events: none; }
+  .builder__preview { position: relative; width: min(100%, 540px); aspect-ratio: 200 / 180; }
+  @media (max-width: 999px) { .builder__preview { width: min(72vw, 340px); } }
+  .builder__layer { position: absolute; inset: 0; opacity: 0; transform: scale(0.97); transition: opacity 0.5s var(--ease), transform 0.7s var(--ease-out); }
+  .builder__layer.is-active { opacity: 1; transform: none; }
+  .builder__layer svg { width: 100%; height: 100%; filter: drop-shadow(0 22px 26px rgba(90, 67, 48, 0.18)); }
+  .builder__caption { position: relative; margin: 0.6rem 0 0; font-size: var(--fs-xxs); font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; text-align: center; color: var(--c-ink-2); }
+  .builder__facts { position: relative; display: flex; gap: 2rem; margin: 1rem 0 0; }
+  .builder__facts div { display: grid; text-align: center; }
+  .builder__facts dt { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+  .builder__facts dd { margin: 0; font-family: var(--ff-serif); font-size: 1.1rem; }
+  @media (max-width: 999px) { .builder__facts { display: none; } .builder__caption { font-size: 0.95rem; } }
+  .builder__title { font-size: var(--fs-1); }
+  .steps { display: grid; gap: 0.5rem; margin-top: 2rem; }
+  .step { border: 0; border-top: 1px solid var(--c-line); padding: 1.6rem 0 1.4rem; margin: 0; min-width: 0; }
+  .step__title { display: flex; align-items: baseline; gap: 0.9rem; width: 100%; padding: 0; margin-bottom: 1.1rem; font-family: var(--ff-serif); font-size: 1.45rem; font-weight: 300; }
+  .step__title b { margin-left: auto; font-family: var(--ff-sans); font-weight: 400; font-size: var(--fs-sm); color: var(--c-gold-dark); }
+  .step__n { font-size: 0.85rem; color: var(--c-gold-dark); letter-spacing: 0.1em; }
+  .step__desc { font-size: var(--fs-sm); color: var(--c-muted); margin: -0.4rem 0 1rem; min-height: 1.5em; }
+  .opt-grid { display: grid; gap: 0.6rem; }
+  .opt-grid--4 { grid-template-columns: repeat(4, 1fr); }
+  .opt-grid--7 { grid-template-columns: repeat(7, 1fr); }
+  .opt-grid--3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 560px) { .opt-grid--7 { grid-template-columns: repeat(4, 1fr); } .opt-grid--3 { grid-template-columns: 1fr; } }
+  .opt { position: relative; cursor: pointer; }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .opt__box { display: grid; justify-items: center; gap: 0.35rem; padding: 0.8rem 0.4rem 0.7rem; border: 1px solid var(--c-line-2); background: #fff; text-align: center; transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s; height: 100%; }
+  .opt:hover .opt__box { border-color: var(--c-ink-2); }
+  .opt input:checked + .opt__box { border-color: var(--c-ink); box-shadow: 0 0 0 1px var(--c-ink); background: #fff; }
+  .opt input:focus-visible + .opt__box { outline: 1.5px solid var(--c-gold); outline-offset: 2px; }
+  .opt__ico { width: 100%; max-width: 68px; aspect-ratio: 1.05; display: grid; color: var(--c-ink-2); }
+  .opt--shape .opt__ico { max-width: 40px; aspect-ratio: 1; }
+  .opt input:checked + .opt__box .opt__ico { color: var(--c-gold-dark); }
+  .opt__label { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+  .opt--text .opt__box { justify-items: start; text-align: left; padding: 0.9rem 1rem; gap: 0.1rem; }
+  .opt--text b { font-weight: 500; font-size: 0.92rem; }
+  .opt__grade { font-family: var(--ff-serif); font-size: 1.05rem; color: var(--c-gold-dark); }
+  .opt--text small { font-size: var(--fs-xs); color: var(--c-muted); line-height: 1.45; }
+  .carat { margin: 1.4rem 0 1.2rem; }
+  .carat__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.6rem; }
+  .carat__head output { font-size: var(--fs-sm); color: var(--c-muted); }
+  .carat__head output b { font-family: var(--ff-serif); font-weight: 400; font-size: 1.25rem; color: var(--c-ink); }
+  .carat input[type='range'] { width: 100%; -webkit-appearance: none; appearance: none; height: 3px; background: linear-gradient(90deg, var(--c-gold) var(--fill, 26%), var(--c-line-2) var(--fill, 26%)); outline: none; }
+  .carat input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid var(--c-gold); box-shadow: 0 2px 10px rgba(34, 28, 23, 0.2); cursor: grab; }
+  .carat input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid var(--c-gold); cursor: grab; }
+  .carat input[type='range']:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1); }
+  .carat__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
+  .carat__chips .chip { padding: 0.35rem 0.8rem; font-size: 0.75rem; }
+  .step .engrave__band { margin-top: 0.4rem; height: 54px; }
+  .step .engrave__band span { font-size: 0.75rem; }
+  .quote { margin-top: 1.4rem; padding: clamp(1.4rem, 3vw, 2.2rem); background: var(--c-bg-2); border: 1px solid var(--c-line); }
+  .quote__title { font-size: 1.5rem; margin-bottom: 1rem; }
+  .quote__rows { margin: 0 0 1rem; display: grid; gap: 0.7rem; font-size: var(--fs-sm); }
+  .quote__rows div { display: flex; justify-content: space-between; gap: 1rem; }
+  .quote__rows dt span { display: block; font-size: var(--fs-xs); color: var(--c-muted); }
+  .quote__rows dd { margin: 0; white-space: nowrap; }
+  .quote__total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 1rem; border-top: 1px solid var(--c-line-2); }
+  .quote__total span { font-size: var(--fs-xxs); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500; }
+  .quote__total b { font-family: var(--ff-serif); font-weight: 300; font-size: clamp(1.8rem, 1.4rem + 1.2vw, 2.4rem); transition: color 0.3s; }
+  .quote__total b.flash { color: var(--c-gold-dark); }
+  .quote__actions { display: grid; gap: 0.6rem; }
+  .builder__faq { margin-top: 2.4rem; }
+  .builder__faq summary { text-transform: none; letter-spacing: 0; font-family: var(--ff-serif); font-size: 1.05rem; font-weight: 400; }
+  .builder-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.7rem var(--gutter) calc(0.7rem + env(safe-area-inset-bottom)); background: rgba(255, 255, 255, 0.97); border-top: 1px solid var(--c-line); backdrop-filter: blur(10px); }
+  .builder-bar div { display: grid; }
+  .builder-bar b { font-family: var(--ff-serif); font-weight: 400; font-size: 1.25rem; }
+  @media (min-width: 1000px) { .builder-bar { display: none; } }
+  .page-builder .fab-stack { bottom: calc(5.2rem + env(safe-area-inset-bottom)); }
+  @media (min-width: 1000px) { .page-builder .fab-stack { bottom: calc(1rem + env(safe-area-inset-bottom)); } }
+  .page-builder .site-footer { padding-bottom: 4.5rem; }
+  @media (min-width: 1000px) { .page-builder .site-footer { padding-bottom: 0; } }
+</style>

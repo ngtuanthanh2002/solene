@@ -1,0 +1,78 @@
+---
+import Icon from './Icon.astro';
+import { MOODS, STYLES, SHAPES } from '../lib/catalog';
+import { COLLECTIONS } from '../data/collections';
+import { SITE } from '../config';
+
+const groups = [
+  {
+    label: 'Nhẫn cầu hôn', href: '/nhan-cau-hon/', sections: [
+      { title: 'Kiểu dáng', icons: true, links: STYLES.map((s) => ({ label: s.label, href: `/nhan-cau-hon/?kieu-dang=${s.key}`, style: s.key })) },
+      { title: 'Kiểu viên chủ', icons: true, links: SHAPES.map((s) => ({ label: s.label, href: `/nhan-cau-hon/?vien-chu=${s.key}`, shape: s.key })) },
+      { title: 'Phong cách', links: MOODS.map((m) => ({ label: m.label, href: `/nhan-cau-hon/?phong-cach=${m.key}` })) },
+    ],
+  },
+  {
+    label: 'Nhẫn cưới', href: '/nhan-cuoi/', sections: [
+      { title: 'Danh mục', links: [{ label: 'Cặp nhẫn cưới', href: '/nhan-cuoi/?loai=cap-nhan-cuoi' }, { label: 'Bộ nhẫn cô dâu', href: '/nhan-cuoi/?loai=bo-nhan-cuoi' }, { label: 'Bán chạy nhất', href: '/nhan-cuoi/?sap-xep=ban-chay' }, { label: 'Dưới 20 triệu', href: '/nhan-cuoi/?gia=duoi-20' }] },
+      { title: 'Phong cách', links: MOODS.map((m) => ({ label: m.label, href: `/nhan-cuoi/?phong-cach=${m.key}` })) },
+    ],
+  },
+  {
+    label: 'Trang sức', href: '/trang-suc/', sections: [
+      { title: 'Danh mục', links: [{ label: 'Dây chuyền', href: '/trang-suc/?loai=day-chuyen' }, { label: 'Bông tai', href: '/trang-suc/?loai=bong-tai' }, { label: 'Lắc & vòng tay', href: '/trang-suc/?loai=lac-tay' }, { label: 'Trang sức cao cấp', href: '/trang-suc-cao-cap/' }, { label: 'Phụ kiện', href: '/phu-kien/' }] },
+    ],
+  },
+  {
+    label: 'Kim cương', href: '/kim-cuong/', sections: [
+      { title: 'Dáng viên', icons: true, links: SHAPES.map((s) => ({ label: s.label, href: `/kim-cuong/?vien-chu=${s.key}`, shape: s.key })) },
+      { title: 'Cẩm nang', links: [{ label: 'Tiêu chuẩn 4C', href: '/kien-thuc-kim-cuong/' }, { label: 'Quy đổi ly – carat', href: '/kien-thuc-kim-cuong/#carat' }] },
+    ],
+  },
+  {
+    label: 'Bộ sưu tập', href: '/bo-suu-tap/', sections: [
+      { title: 'Bộ sưu tập', links: COLLECTIONS.map((c) => ({ label: c.name, href: `/bo-suu-tap/${c.slug}/` })) },
+    ],
+  },
+];
+---
+<aside class="drawer drawer--left" id="mnav" data-drawer="mnav" aria-label="Menu" aria-hidden="true" tabindex="-1">
+  <div class="drawer__head">
+    <a href="/" class="logo" style="align-items:flex-start"><span class="logo__word" style="font-size:1.1rem">SOLÈNE</span></a>
+    <button class="icon-btn" type="button" data-drawer-close aria-label="Đóng menu"><Icon name="close" /></button>
+  </div>
+  <div class="drawer__body">
+    <button class="mnav__search" type="button" data-search-open><Icon name="search" />Tìm nhẫn, kim cương, bộ sưu tập…</button>
+    <ul class="mnav__list" role="list">
+      {groups.map((g, i) => (
+        <li>
+          <button class="mnav__toggle" type="button" aria-expanded="false" aria-controls={`mnav-sub-${i}`} data-mnav-toggle>{g.label}<Icon name="plus" /></button>
+          <div class="mnav__sub" id={`mnav-sub-${i}`}>
+            <div>
+              <a class="link" href={g.href} style="margin:0 0 1.1rem">Xem tất cả {g.label.toLowerCase()} <Icon name="arrow-right" /></a>
+              {g.sections.map((s) => (
+                <div class="mnav__group">
+                  <h5>{s.title}</h5>
+                  <div class="mnav__grid">
+                    {s.links.map((l: any) => (
+                      <a href={l.href}>{l.label}</a>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </li>
+      ))}
+      <li><a class="mnav__link" href="/trang-suc-cao-cap/">Trang sức cao cấp</a></li>
+      <li><a class="mnav__link" href="/phu-kien/">Phụ kiện</a></li>
+      <li><a class="mnav__link" href="/thiet-ke-nhan/">Thiết kế nhẫn riêng</a></li>
+    </ul>
+  </div>
+  <div class="drawer__foot mnav__foot">
+    <a href="/tai-khoan/" data-account-text><Icon name="user" /><span>Đăng nhập / Đăng ký</span></a>
+    <a href="/yeu-thich/"><Icon name="heart" />Danh sách yêu thích</a>
+    <a href="/dat-lich-hen/"><Icon name="calendar" />Đặt lịch hẹn tại showroom</a>
+    <a href={SITE.phoneHref}><Icon name="phone" />Hotline {SITE.phone} (miễn phí)</a>
+  </div>
+</aside>

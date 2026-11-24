@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Listing from '../../components/Listing.astro';
+import Img from '../../components/Img.astro';
+import Icon from '../../components/Icon.astro';
+import { COLLECTIONS, type Collection } from '../../data/collections';
+import { byCollection } from '../../data/products';
+import { breadcrumbLd, itemListLd } from '../../lib/seo';
+
+export function getStaticPaths() {
+  return COLLECTIONS.map((c) => ({ params: { slug: c.slug }, props: { col: c } }));
+}
+const { col } = Astro.props as { col: Collection };
+const products = byCollection(col.slug).sort((a, b) => b.sold - a.sold);
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Bộ sưu tập', href: '/bo-suu-tap/' }, { label: col.name }];
+const others = COLLECTIONS.filter((c) => c.slug !== col.slug).slice(0, 3);
+const site = Astro.site!;
+---
+<Base title={`Bộ sưu tập ${col.name} — ${col.tagline}`} description={`${col.intro} ${products.length} thiết kế nhẫn, dây chuyền, bông tai trong bộ sưu tập ${col.name} của Solène.`} image={`/images/og/${col.banner}.jpg`} jsonld={[breadcrumbLd(crumbs, site), itemListLd(products, site, `Bộ sưu tập ${col.name}`)]}>
+  <PageHero banner={col.banner} eyebrow={col.season} title={`${col.name}`} intro={col.tagline} alt={`Bộ sưu tập ${col.name}`} />
+  <section class="section coll-story">
+    <div class="container coll-story__grid">
+      <div class="coll-story__img ratio ratio--45" data-reveal><Img k={col.image} alt={`Thiết kế tiêu biểu của bộ sưu tập ${col.name}`} sizes="(min-width: 900px) 32vw, 90vw" /></div>
+      <div data-reveal style="--d:.12s">
+        <p class="eyebrow eyebrow--line">Câu chuyện</p>
+        <h2>{col.intro}</h2>
+        {col.story.map((p) => <p class="lead">{p}</p>)}
+      </div>
+    </div>
+  </section>
+  <Listing products={products} filters={['type', 'metal', 'price']} crumbs={crumbs} />
+  <section class="section section--cream">
+    <div class="container">
+      <div class="section-head"><div><p class="eyebrow eyebrow--line">Khám phá thêm</p><h2>Bộ sưu tập <em>khác</em></h2></div><a class="link" href="/bo-suu-tap/">Tất cả bộ sưu tập <Icon name="arrow-right" /></a></div>
+      <div class="other-colls">
+        {others.map((c) => (
+          <a class="other-coll" href={`/bo-suu-tap/${c.slug}/`}>
+            <span class="ratio ratio--45"><Img k={c.image} alt="" sizes="(min-width: 900px) 30vw, 90vw" /></span>
+            <span class="caps muted">{c.season}</span>
+            <span class="serif other-coll__name">{c.name}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+<style is:global>
+  .coll-story__grid { display: grid; gap: 2.5rem; align-items: center; }
+  @media (min-width: 900px) { .coll-story__grid { grid-template-columns: 0.75fr 1fr; gap: clamp(3rem, 8vw, 8rem); } }
+  .coll-story h2 { font-size: var(--fs-2); }
+  .other-colls { display: grid; gap: 1.4rem; grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .other-colls { grid-template-columns: repeat(3, 1fr); } }
+  .other-coll { display: grid; gap: 0.5rem; }
+  .other-coll .ratio { margin-bottom: 0.6rem; }
+  .other-coll img { transition: transform 1.4s var(--ease-out); }
+  .other-coll:hover img { transform: scale(1.04); }
+  .other-coll__name { font-size: 1.6rem; }
+</style>

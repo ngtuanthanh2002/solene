@@ -1,0 +1,204 @@
+---
+import Icon from './Icon.astro';
+import { NAV } from '../data/nav';
+import { MOODS, STYLES, SHAPES, METALS, METAL_KEYS, imageUrl } from '../lib/catalog';
+import { COLLECTIONS } from '../data/collections';
+import { PRODUCTS } from '../data/products';
+import { SITE } from '../config';
+
+interface Props { transparent?: boolean }
+const { transparent = false } = Astro.props;
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const diamondSizes = PRODUCTS.filter((p) => p.type === 'kim-cuong-vien' && p.slug.includes('-ly'));
+const coll = (slugs: string[]) => slugs.map((s) => COLLECTIONS.find((x) => x.slug === s)!).filter(Boolean);
+---
+<div class="announce" role="region" aria-label="Thông báo">
+  <div class="announce__track" data-announce>
+    <p class="announce__msg is-active">Miễn phí giao hàng &amp; bảo hiểm 100% giá trị toàn quốc</p>
+    <p class="announce__msg">Ưu đãi mùa cưới — nhập mã&nbsp;<b>CUOI2026</b>&nbsp;giảm 5% nhẫn cưới</p>
+    <p class="announce__msg">Khắc chữ miễn phí · Bảo hành trọn đời · <a href="/dat-lich-hen/">Đặt lịch hẹn</a></p>
+  </div>
+</div>
+
+<header class:list={['site-header', { 'is-transparent': transparent }]} data-header>
+  <div class="container header-row header-top">
+    <div class="header-left">
+      <button class="icon-btn only-mobile" type="button" data-drawer-open="mnav" aria-controls="mnav" aria-expanded="false" aria-label="Mở menu"><Icon name="menu" /></button>
+      <button class="icon-btn only-mobile" type="button" data-search-open aria-label="Tìm kiếm"><Icon name="search" /></button>
+      <div class="header-util">
+        <a href={SITE.phoneHref}>{SITE.phone}</a>
+        <a href="/dat-lich-hen/">Đặt lịch hẹn</a>
+        <a href="/lien-he/">Showroom</a>
+      </div>
+    </div>
+
+    <a href="/" class="logo" aria-label={`${SITE.legalName} — Trang chủ`}>
+      <span class="logo__word">SOLÈNE</span>
+      <span class="logo__tag">Fine Jewelry · {SITE.founded}</span>
+    </a>
+
+    <div class="header-right">
+      <button class="icon-btn only-desktop" type="button" data-search-open aria-label="Tìm kiếm"><Icon name="search" /></button>
+      <a class="icon-btn header-account" href="/tai-khoan/" data-account-link aria-label="Tài khoản"><span data-account-icon><Icon name="user" /></span></a>
+      <a class="icon-btn only-desktop" href="/yeu-thich/" aria-label="Danh sách yêu thích"><Icon name="heart" /><span class="count" data-wish-count></span></a>
+      <button class="icon-btn" type="button" data-drawer-open="cart" aria-controls="cart" aria-expanded="false" aria-label="Giỏ hàng"><Icon name="bag" /><span class="count" data-cart-count></span></button>
+    </div>
+  </div>
+
+  <nav class="main-nav" aria-label="Danh mục chính">
+    <ul class="main-nav__list" role="list">
+      {NAV.map((item) => (
+        <li class="main-nav__item" data-mega-item={item.mega ? item.mega : undefined}>
+          <a class="main-nav__link" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined} aria-haspopup={item.mega ? 'true' : undefined} aria-expanded={item.mega ? 'false' : undefined}>{item.label}</a>
+
+          {item.mega === 'engagement' && (
+            <div class="mega" role="region" aria-label="Nhẫn cầu hôn">
+              <div class="container mega__inner">
+                <div class="mega__cols" style="--cols:4">
+                  <div><p class="mega__title">Kiểu dáng</p>
+                    <ul class="mega__list" role="list">{STYLES.map((s) => <li><a href={`/nhan-cau-hon/?kieu-dang=${s.key}`}>{s.label}</a></li>)}</ul></div>
+                  <div><p class="mega__title">Kiểu viên chủ</p>
+                    <ul class="mega__list" role="list">{SHAPES.map((s) => <li><a href={`/nhan-cau-hon/?vien-chu=${s.key}`}>{s.label}</a></li>)}</ul></div>
+                  <div><p class="mega__title">Phong cách</p>
+                    <ul class="mega__list" role="list">{MOODS.map((m) => <li><a href={`/nhan-cau-hon/?phong-cach=${m.key}`}>{m.label}</a></li>)}</ul></div>
+                  <div><p class="mega__title">Dịch vụ</p>
+                    <ul class="mega__list" role="list">
+                      <li><a href="/nhan-cau-hon/">Tất cả nhẫn cầu hôn</a></li>
+                      <li><a href="/thiet-ke-nhan/">Thiết kế nhẫn riêng</a></li>
+                      <li><a href="/huong-dan-do-ni-tay/">Hướng dẫn đo ni tay</a></li>
+                      <li><a href="/kien-thuc-kim-cuong/">Cẩm nang kim cương 4C</a></li>
+                    </ul></div>
+                </div>
+                <a class="mega__feature" href="/thiet-ke-nhan/">
+                  <figure>
+                    <img src={imageUrl('life-ring-box', 400)} width="400" height="500" alt="Nhẫn cầu hôn solitaire trong hộp nhung" loading="lazy" decoding="async" />
+                    <figcaption><p class="serif">Thiết kế nhẫn của riêng bạn</p><span class="caps">Bắt đầu</span></figcaption>
+                  </figure>
+                </a>
+              </div>
+            </div>
+          )}
+
+          {item.mega === 'wedding' && (
+            <div class="mega" role="region" aria-label="Nhẫn cưới">
+              <div class="container mega__inner">
+                <div class="mega__cols" style="--cols:3">
+                  <div><p class="mega__title">Danh mục</p>
+                    <ul class="mega__list" role="list">
+                      <li><a href="/nhan-cuoi/">Tất cả nhẫn cưới</a></li>
+                      <li><a href="/nhan-cuoi/?loai=cap-nhan-cuoi">Cặp nhẫn cưới</a></li>
+                      <li><a href="/nhan-cuoi/?loai=bo-nhan-cuoi">Bộ nhẫn cô dâu</a></li>
+                      <li><a href="/nhan-cuoi/?sap-xep=moi-nhat">Mẫu mới 2026</a></li>
+                    </ul></div>
+                  <div><p class="mega__title">Chất liệu</p>
+                    <ul class="mega__list" role="list">{METAL_KEYS.map((k) => <li><a href={`/nhan-cuoi/?chat-lieu=${k}`}>{METALS[k].label}</a></li>)}</ul></div>
+                  <div><p class="mega__title">Bộ sưu tập</p>
+                    <ul class="mega__list" role="list">{coll(['hand-in-hand', 'silk-veil', 'starlit-vow', 'ma-cherie', 'eternal-grace']).map((c) => <li><a href={`/bo-suu-tap/${c.slug}/`}>{c.name}</a></li>)}</ul></div>
+                </div>
+                <a class="mega__feature" href="/bo-suu-tap/hand-in-hand/">
+                  <figure>
+                    <img src={imageUrl('band-interlock', 400)} width="400" height="500" alt="Cặp nhẫn cưới vàng 18K đan vào nhau" loading="lazy" decoding="async" />
+                    <figcaption><p class="serif">Hand in Hand</p><span class="caps">Khắc lời thề miễn phí</span></figcaption>
+                  </figure>
+                </a>
+              </div>
+            </div>
+          )}
+
+          {item.mega === 'jewelry' && (
+            <div class="mega" role="region" aria-label="Trang sức">
+              <div class="container mega__inner">
+                <div class="mega__cols" style="--cols:3">
+                  <div><p class="mega__title">Danh mục</p>
+                    <ul class="mega__list" role="list">
+                      <li><a href="/trang-suc/?loai=day-chuyen">Dây chuyền &amp; mặt dây</a></li>
+                      <li><a href="/trang-suc/?loai=bong-tai">Bông tai</a></li>
+                      <li><a href="/trang-suc/?loai=lac-tay">Lắc &amp; vòng tay</a></li>
+                      <li><a href="/trang-suc-cao-cap/">Trang sức cao cấp</a></li>
+                      <li><a href="/phu-kien/">Phụ kiện</a></li>
+                    </ul></div>
+                  <div><p class="mega__title">Bộ sưu tập</p>
+                    <ul class="mega__list" role="list">{coll(['petite-lumiere', 'lotus-bloom', 'ma-cherie', 'silk-veil', 'starlit-vow']).map((c) => <li><a href={`/bo-suu-tap/${c.slug}/`}>{c.name}</a></li>)}</ul></div>
+                  <div><p class="mega__title">Quà tặng</p>
+                    <ul class="mega__list" role="list">
+                      <li><a href="/trang-suc/?gia=duoi-20">Quà dưới 20 triệu</a></li>
+                      <li><a href="/tim-kiem/?q=ngọc trai">Ngọc trai cho mẹ</a></li>
+                      <li><a href="/tim-kiem/?q=trái tim">Trái tim cho người thương</a></li>
+                      <li><a href="/trang-suc/?sap-xep=ban-chay">Được tặng nhiều nhất</a></li>
+                    </ul></div>
+                </div>
+                <a class="mega__feature" href="/trang-suc/?loai=day-chuyen">
+                  <figure>
+                    <img src={imageUrl('ed-necklace-light', 400)} width="400" height="500" alt="Dây chuyền vàng dưới ánh nắng" loading="lazy" decoding="async" />
+                    <figcaption><p class="serif">Dây chuyền mới</p><span class="caps">Khám phá</span></figcaption>
+                  </figure>
+                </a>
+              </div>
+            </div>
+          )}
+
+          {item.mega === 'diamond' && (
+            <div class="mega" role="region" aria-label="Kim cương">
+              <div class="container mega__inner">
+                <div class="mega__cols" style="--cols:3">
+                  <div><p class="mega__title">Kim cương viên GIA</p>
+                    <ul class="mega__list" role="list">{diamondSizes.map((p) => <li><a href={`/san-pham/${p.slug}/`}>{p.name.replace('Kim cương GIA ', 'Kim cương ')}</a></li>)}
+                      <li><a href="/kim-cuong/">Xem tất cả</a></li></ul></div>
+                  <div><p class="mega__title">Dáng viên</p>
+                    <ul class="mega__list" role="list">{SHAPES.map((s) => <li><a href={`/kim-cuong/?vien-chu=${s.key}`}>{s.label}</a></li>)}</ul></div>
+                  <div><p class="mega__title">Cẩm nang</p>
+                    <ul class="mega__list" role="list">
+                      <li><a href="/kien-thuc-kim-cuong/">Tiêu chuẩn 4C</a></li>
+                      <li><a href="/kien-thuc-kim-cuong/#carat">Bảng quy đổi ly – carat</a></li>
+                      <li><a href="/kien-thuc-kim-cuong/#gia">Giấy kiểm định GIA</a></li>
+                      <li><a href="/chinh-sach/doi-tra/">Thu đổi kim cương trọn đời</a></li>
+                    </ul></div>
+                </div>
+                <a class="mega__feature" href="/kien-thuc-kim-cuong/">
+                  <figure>
+                    <img src={imageUrl('dia-tweezers', 400)} width="400" height="500" alt="Viên kim cương được giữ bằng nhíp chuyên dụng" loading="lazy" decoding="async" />
+                    <figcaption><p class="serif">Hiểu về kim cương 4C</p><span class="caps">Đọc cẩm nang</span></figcaption>
+                  </figure>
+                </a>
+              </div>
+            </div>
+          )}
+
+          {item.mega === 'collections' && (
+            <div class="mega" role="region" aria-label="Bộ sưu tập">
+              <div class="container mega__inner mega__inner--collections">
+                <ul class="mega-coll" role="list">
+                  {COLLECTIONS.map((c) => (
+                    <li><a href={`/bo-suu-tap/${c.slug}/`}>{c.name}</a></li>
+                  ))}
+                  <li><a href="/bo-suu-tap/" class="mega-coll__all">Tất cả bộ sưu tập</a></li>
+                </ul>
+                <div class="mega-coll__feats">
+                  {COLLECTIONS.slice(0, 3).map((c) => (
+                    <a class="mega__feature" href={`/bo-suu-tap/${c.slug}/`}>
+                      <figure>
+                        <img src={imageUrl(c.image, 400)} width="400" height="500" alt={`Bộ sưu tập ${c.name}`} loading="lazy" decoding="async" />
+                        <figcaption><p class="serif">{c.name}</p><span class="caps">{c.season}</span></figcaption>
+                      </figure>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
+<div class="mega-backdrop" data-mega-backdrop aria-hidden="true"></div>
+
+<style is:global>
+  .mega__inner--collections { grid-template-columns: minmax(220px, 1fr) 2.4fr; }
+  .mega-coll { list-style: none; display: grid; gap: 0.1rem; align-content: start; }
+  .mega-coll a { display: block; padding: 0.32rem 0; font-size: 0.875rem; transition: opacity 0.25s; }
+  .mega-coll a:hover { opacity: 0.55; }
+  .mega-coll__all { margin-top: 0.8rem; font-size: var(--fs-xxs) !important; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 4px; }
+  .mega-coll__feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: start; }
+</style>

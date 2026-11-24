@@ -1,0 +1,125 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { PROVINCES } from '../data/content';
+---
+<Base title="Thanh toán" description="Thanh toán đơn hàng an toàn tại Solène Fine Jewelry." noindex bodyClass="page-checkout">
+  <section class="container checkout" data-checkout>
+    <header class="cartpage__head">
+      <h1>Thanh toán</h1>
+      <ol class="checkout-steps" role="list"><li class="is-done">Giỏ hàng</li><li class="is-active">Thông tin</li><li>Hoàn tất</li></ol>
+    </header>
+
+    <div class="empty-state" data-co-empty hidden>
+      <Icon name="bag" /><h2>Giỏ hàng đang trống</h2><p class="muted">Hãy chọn sản phẩm trước khi thanh toán.</p>
+      <a class="btn" href="/cua-hang/">Khám phá cửa hàng</a>
+    </div>
+
+    <div class="checkout__grid" data-co-filled hidden>
+      <form class="checkout__form" data-co-form novalidate>
+        <div class="co-login" data-co-login>
+          <Icon name="user" />
+          <p>Đã có tài khoản? <button type="button" class="link-inline" data-auth-open="login">Đăng nhập</button> để thanh toán nhanh và theo dõi đơn hàng.</p>
+        </div>
+
+        <fieldset class="co-sec">
+          <legend class="co-sec__title"><span>1</span>Thông tin liên hệ</legend>
+          <div class="form-grid form-grid--2">
+            <div class="field"><label for="co-email">Email <span class="req">*</span></label><input class="input" id="co-email" name="email" type="email" autocomplete="email" required /><span class="field-error" data-error-for="email"></span></div>
+            <div class="field"><label for="co-phone">Số điện thoại <span class="req">*</span></label><input class="input" id="co-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxx" required /><span class="field-error" data-error-for="phone"></span></div>
+          </div>
+        </fieldset>
+
+        <fieldset class="co-sec">
+          <legend class="co-sec__title"><span>2</span>Địa chỉ giao hàng</legend>
+          <div class="field" data-co-saved hidden style="margin-bottom:1rem">
+            <label for="co-saved">Sổ địa chỉ</label>
+            <select class="select" id="co-saved" data-co-saved-select></select>
+          </div>
+          <div class="form-grid form-grid--2">
+            <div class="field span-2"><label for="co-name">Họ tên người nhận <span class="req">*</span></label><input class="input" id="co-name" name="name" autocomplete="name" required /><span class="field-error" data-error-for="name"></span></div>
+            <div class="field"><label for="co-province">Tỉnh / Thành phố <span class="req">*</span></label>
+              <select class="select" id="co-province" name="province" required><option value="">Chọn tỉnh / thành phố</option>{PROVINCES.map((p) => <option value={p}>{p}</option>)}</select>
+              <span class="field-error" data-error-for="province"></span></div>
+            <div class="field"><label for="co-ward">Phường / Xã <span class="req">*</span></label><input class="input" id="co-ward" name="ward" autocomplete="address-level3" required /><span class="field-error" data-error-for="ward"></span></div>
+            <div class="field span-2"><label for="co-address">Số nhà, tên đường <span class="req">*</span></label><input class="input" id="co-address" name="address" autocomplete="street-address" placeholder="VD: 68 Đồng Khởi" required /><span class="field-error" data-error-for="address"></span></div>
+          </div>
+          <label class="check" data-co-save-addr hidden style="margin-top:1rem"><input type="checkbox" name="saveAddress" checked /><span class="box"></span>Lưu địa chỉ này vào sổ địa chỉ</label>
+        </fieldset>
+
+        <fieldset class="co-sec">
+          <legend class="co-sec__title"><span>3</span>Phương thức giao hàng</legend>
+          <div class="co-options">
+            <label class="option-card"><input type="radio" name="ship" value="standard" data-fee="0" data-label="Giao tiêu chuẩn có bảo hiểm" checked /><span class="oc"><span class="oc__body"><span class="oc__title">Giao tiêu chuẩn có bảo hiểm</span><span class="oc__desc">1–3 ngày (sẵn hàng) · 7–10 ngày (chế tác theo ni)</span></span><span class="oc__price">Miễn phí</span></span></label>
+            <label class="option-card" data-express><input type="radio" name="ship" value="express" data-fee="150000" data-label="Giao hỏa tốc 2 giờ" /><span class="oc"><span class="oc__body"><span class="oc__title">Giao hỏa tốc 2 giờ</span><span class="oc__desc">Nội thành TP. Hồ Chí Minh &amp; Hà Nội · sản phẩm sẵn hàng</span></span><span class="oc__price">150.000 ₫</span></span></label>
+            <label class="option-card"><input type="radio" name="ship" value="boutique" data-fee="0" data-label="Nhận tại showroom" /><span class="oc"><span class="oc__body"><span class="oc__title">Nhận tại showroom</span><span class="oc__desc">Thử nhẫn, chỉnh ni và nhận hộp quà trực tiếp</span></span><span class="oc__price">Miễn phí</span></span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="co-sec">
+          <legend class="co-sec__title"><span>4</span>Phương thức thanh toán</legend>
+          <div class="co-options">
+            <label class="option-card"><input type="radio" name="pay" value="cod" data-label="Thanh toán khi nhận hàng (COD)" checked /><span class="oc"><Icon name="cash" class="oc__ico" /><span class="oc__body"><span class="oc__title">Thanh toán khi nhận hàng (COD)</span><span class="oc__desc">Áp dụng cho đơn dưới 50 triệu đồng</span></span></span></label>
+            <label class="option-card"><input type="radio" name="pay" value="bank" data-label="Chuyển khoản ngân hàng" /><span class="oc"><Icon name="bank" class="oc__ico" /><span class="oc__body"><span class="oc__title">Chuyển khoản ngân hàng</span><span class="oc__desc">Thông tin tài khoản hiển thị sau khi đặt hàng</span></span></span></label>
+            <label class="option-card"><input type="radio" name="pay" value="installment" data-label="Trả góp 0% qua thẻ tín dụng" /><span class="oc"><Icon name="card" class="oc__ico" /><span class="oc__body"><span class="oc__title">Trả góp 0% qua thẻ tín dụng</span><span class="oc__desc">3–12 tháng · chuyên viên liên hệ hướng dẫn</span></span></span></label>
+            <label class="option-card"><input type="radio" name="pay" value="boutique" data-label="Thanh toán tại showroom" /><span class="oc"><Icon name="store" class="oc__ico" /><span class="oc__body"><span class="oc__title">Thanh toán tại showroom</span><span class="oc__desc">Tiền mặt, thẻ ATM, Visa, Mastercard, JCB</span></span></span></label>
+          </div>
+          <span class="field-error" data-error-for="pay"></span>
+        </fieldset>
+
+        <fieldset class="co-sec">
+          <legend class="co-sec__title"><span>5</span>Thông tin thêm</legend>
+          <div class="field"><label for="co-note">Ghi chú đơn hàng</label><textarea class="textarea" id="co-note" name="note" maxlength="300" placeholder="VD: Giao giờ hành chính, gọi trước khi giao, đây là quà bất ngờ…"></textarea></div>
+          <label class="check" style="margin-top:1rem"><input type="checkbox" name="invoice" data-invoice-toggle /><span class="box"></span>Xuất hóa đơn công ty</label>
+          <div class="form-grid form-grid--2" data-invoice hidden style="margin-top:1rem">
+            <div class="field span-2"><label for="co-company">Tên công ty</label><input class="input" id="co-company" name="company" /><span class="field-error" data-error-for="company"></span></div>
+            <div class="field"><label for="co-tax">Mã số thuế</label><input class="input" id="co-tax" name="taxCode" inputmode="numeric" /><span class="field-error" data-error-for="taxCode"></span></div>
+            <div class="field"><label for="co-caddr">Địa chỉ công ty</label><input class="input" id="co-caddr" name="companyAddress" /></div>
+          </div>
+        </fieldset>
+
+        <label class="check co-terms"><input type="checkbox" name="terms" /><span class="box"></span><span>Tôi đã đọc và đồng ý với <a class="link-inline" href="/chinh-sach/doi-tra/" target="_blank">chính sách đổi trả</a> và <a class="link-inline" href="/chinh-sach/bao-mat/" target="_blank">chính sách bảo mật</a>.</span></label>
+        <span class="field-error" data-error-for="terms"></span>
+        <button class="btn btn--block co-submit" type="submit" data-co-submit><Icon name="lock" />Đặt hàng · <span data-co-total-btn></span></button>
+        <p class="tiny muted center">Thông tin của bạn được mã hóa và bảo mật tuyệt đối.</p>
+      </form>
+
+      <aside class="summary checkout__summary" aria-labelledby="co-sum">
+        <h2 id="co-sum" class="summary__title">Đơn hàng <span class="muted small" data-co-count></span></h2>
+        <ul class="co-items" role="list" data-co-items></ul>
+        <form class="promo" data-promo-form novalidate>
+          <label for="co-promo" class="sr-only">Mã ưu đãi</label>
+          <input class="input" id="co-promo" name="code" placeholder="Mã ưu đãi" autocomplete="off" />
+          <button class="btn btn--outline btn--sm" type="submit">Áp dụng</button>
+        </form>
+        <p class="promo__msg tiny" data-promo-msg></p>
+        <div class="totals" data-co-totals></div>
+        <p class="tiny muted" data-co-gift hidden></p>
+        <a class="link" href="/gio-hang/" style="margin-top:1.2rem"><Icon name="arrow-left" />Chỉnh sửa giỏ hàng</a>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { initCheckout } from '../scripts/pages/checkout';
+  initCheckout();
+</script>
+
+<style is:global>
+  .checkout { padding-bottom: var(--section); }
+  .checkout__grid { display: grid; gap: 2.5rem; align-items: start; }
+  @media (min-width: 1000px) { .checkout__grid { grid-template-columns: 1fr 420px; gap: 4rem; } }
+  .checkout__form { display: grid; gap: 0.6rem; min-width: 0; }
+  .co-login { display: flex; align-items: center; gap: 0.9rem; padding: 1rem 1.2rem; background: var(--g-satin); border: 1px solid var(--c-line); font-size: var(--fs-sm); }
+  .co-login p { margin: 0; }
+  .co-login > svg { width: 20px; height: 20px; color: var(--c-gold-dark); flex: none; }
+  .co-sec { border: 0; padding: 1.6rem 0; margin: 0; border-bottom: 1px solid var(--c-line); min-width: 0; }
+  .co-sec__title { display: flex; align-items: center; gap: 0.8rem; padding: 0; margin-bottom: 1.2rem; font-family: var(--ff-serif); font-size: 1.4rem; font-weight: 300; }
+  .co-sec__title span { width: 30px; height: 30px; border-radius: 50%; background: var(--c-ink); color: #fff; display: grid; place-items: center; font-family: var(--ff-sans); font-size: 0.75rem; }
+  .co-options { display: grid; gap: 0.6rem; }
+  .oc__ico { width: 22px; height: 22px; color: var(--c-gold-dark); flex: none; }
+  .option-card.is-disabled { opacity: 0.45; pointer-events: none; }
+  .co-terms { margin-top: 1.2rem; }
+  .co-submit { margin-top: 1rem; min-height: 58px; }
+</style>

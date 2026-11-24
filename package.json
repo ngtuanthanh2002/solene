@@ -1,0 +1,17 @@
+{
+  "name": "solene-fine-jewelry",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Solène Fine Jewelry - website demo trang sức cao cấp (Astro)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.6",
+    "astro": "^7.4.13"
+  }
+}

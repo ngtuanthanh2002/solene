@@ -1,0 +1,7 @@
+---
+import { productCardHTML, toCard } from '../lib/card';
+import type { Product } from '../data/products';
+interface Props { product: Product; index?: number; sizes?: string; eager?: boolean }
+const { product, index = 0, sizes, eager = false } = Astro.props;
+---
+<Fragment set:html={productCardHTML(toCard(product), { index, sizes, eager })} />

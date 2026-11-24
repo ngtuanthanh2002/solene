@@ -1,0 +1,54 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { POLICIES, type Policy } from '../../data/policies';
+import { breadcrumbLd, faqLd } from '../../lib/seo';
+import { formatDate } from '../../lib/format';
+import { SITE } from '../../config';
+
+export function getStaticPaths() {
+  return POLICIES.map((p) => ({ params: { slug: p.slug }, props: { policy: p } }));
+}
+const { policy } = Astro.props as { policy: Policy };
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Hỗ trợ khách hàng', href: '/chinh-sach/cau-hoi-thuong-gap/' }, { label: policy.title }];
+const ld: Record<string, unknown>[] = [breadcrumbLd(crumbs, Astro.site!)];
+if (policy.slug === 'cau-hoi-thuong-gap') ld.push(faqLd(policy.sections.map((s) => ({ q: s.h, a: s.p.join(' ') }))));
+---
+<Base title={policy.title} description={policy.description} jsonld={ld}>
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+  <section class="container policy">
+    <aside class="policy__nav" aria-label="Chính sách">
+      <p class="caps muted">Hỗ trợ khách hàng</p>
+      <ul class="list-reset">{POLICIES.map((p) => <li><a href={`/chinh-sach/${p.slug}/`} aria-current={p.slug === policy.slug ? 'page' : undefined}>{p.title}</a></li>)}</ul>
+      <div class="policy__help"><Icon name="phone" /><span>Cần hỗ trợ ngay?<br /><a href={SITE.phoneHref}><b>{SITE.phone}</b></a> · miễn phí</span></div>
+    </aside>
+    <article class="policy__body">
+      <h1>{policy.title}</h1>
+      <p class="lead">{policy.description}</p>
+      <p class="tiny muted">Cập nhật lần cuối: {formatDate(policy.updated)}</p>
+      {policy.sections.map((s, i) => (
+        <section class="policy__sec" id={`muc-${i + 1}`}>
+          <h2>{s.h}</h2>
+          {s.p.length > 1 ? <ul>{s.p.map((t) => <li>{t}</li>)}</ul> : <p>{s.p[0]}</p>}
+        </section>
+      ))}
+    </article>
+  </section>
+</Base>
+<style is:global>
+  .policy { display: grid; gap: 2.5rem; padding-block: 1rem var(--section); }
+  @media (min-width: 960px) { .policy { grid-template-columns: 260px 1fr; gap: 5rem; } .policy__nav { position: sticky; top: calc(var(--header-h) + 1.4rem); align-self: start; } }
+  .policy__nav ul { display: grid; gap: 0.2rem; margin: 1rem 0 2rem; }
+  .policy__nav a { display: block; padding: 0.55rem 0 0.55rem 0.9rem; border-left: 1px solid var(--c-line); font-size: var(--fs-sm); color: var(--c-ink-2); transition: border-color 0.3s, color 0.3s; }
+  .policy__nav a:hover, .policy__nav a[aria-current='page'] { border-color: var(--c-gold); color: var(--c-ink); }
+  .policy__nav a[aria-current='page'] { font-weight: 500; }
+  .policy__help { display: flex; gap: 0.8rem; padding: 1.1rem; background: var(--c-bg-2); font-size: var(--fs-sm); }
+  .policy__help svg { width: 20px; height: 20px; color: var(--c-gold-dark); flex: none; }
+  .policy__body { max-width: 760px; }
+  .policy__sec { padding-top: 2rem; margin-top: 2rem; border-top: 1px solid var(--c-line); }
+  .policy__sec h2 { font-size: var(--fs-3); }
+  .policy__sec ul { padding-left: 1.2rem; display: grid; gap: 0.6rem; color: var(--c-ink-2); }
+  .policy__sec li::marker { color: var(--c-gold); }
+  .policy__sec p { color: var(--c-ink-2); }
+</style>

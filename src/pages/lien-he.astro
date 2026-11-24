@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE } from '../config';
+import { breadcrumbLd } from '../lib/seo';
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Liên hệ' }];
+const storesLd = SITE.boutiques.map((b) => ({
+  '@context': 'https://schema.org', '@type': 'JewelryStore', name: b.name, telephone: b.phone, image: new URL(`/images/p/${b.image}-800.webp`, Astro.site!).href,
+  address: { '@type': 'PostalAddress', streetAddress: b.street, addressLocality: b.locality, addressCountry: 'VN' },
+  openingHours: 'Mo-Su 09:00-21:00', parentOrganization: { '@type': 'Organization', name: SITE.legalName },
+}));
+---
+<Base title="Liên hệ & hệ thống showroom" description={`Liên hệ Solène Fine Jewelry: hotline ${SITE.phone} (miễn phí), showroom tại TP. Hồ Chí Minh và Hà Nội, mở cửa 9:00 – 21:00 hằng ngày.`} jsonld={[breadcrumbLd(crumbs, Astro.site!), ...storesLd]}>
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+  <header class="page-title"><p class="eyebrow">Contact</p><h1>Luôn sẵn lòng <em>lắng nghe</em></h1><p>Ghé thăm showroom, gọi hotline miễn phí hoặc để lại lời nhắn — chuyên viên Solène phản hồi trong vòng 2 giờ làm việc.</p></header>
+
+  <section class="container contact-quick">
+    <a href={SITE.phoneHref}><Icon name="phone" /><b>{SITE.phone}</b><span>Hotline miễn phí · 9:00 – 21:00</span></a>
+    <a href={SITE.zalo} target="_blank" rel="noopener"><Icon name="chat" /><b>Zalo</b><span>Nhắn tin, gửi ảnh mẫu bạn thích</span></a>
+    <a href={`mailto:${SITE.email}`}><Icon name="mail" /><b>Email</b><span>{SITE.email}</span></a>
+    <a href="/dat-lich-hen/"><Icon name="calendar" /><b>Đặt lịch hẹn</b><span>Tư vấn riêng tại showroom</span></a>
+  </section>
+
+  <section class="section">
+    <div class="container stores">
+      {SITE.boutiques.map((b) => (
+        <article class="store" data-reveal>
+          <div class="ratio ratio--45 store__img"><Img k={b.image} alt={`Showroom ${b.name}`} sizes="(min-width: 900px) 30vw, 90vw" /></div>
+          <div class="store__body">
+            <h2>{b.name}</h2>
+            <ul class="list-reset store__info">
+              <li><Icon name="pin" />{b.address}</li>
+              <li><Icon name="clock" />{b.hours}</li>
+              <li><Icon name="phone" /><a href={`tel:${b.phone.replace(/\s/g, '')}`}>{b.phone}</a></li>
+            </ul>
+            <div class="store__actions">
+              <a class="btn btn--sm" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.address)}`} target="_blank" rel="noopener"><Icon name="pin" />Chỉ đường</a>
+              <a class="btn btn--outline btn--sm" href="/dat-lich-hen/">Đặt lịch hẹn</a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section section--cream">
+    <div class="container contact-grid">
+      <div>
+        <p class="eyebrow eyebrow--line">Gửi lời nhắn</p>
+        <h2>Chúng tôi có thể <em>giúp gì</em> cho bạn?</h2>
+        <p class="muted">Từ câu hỏi về ni tay, kim cương, đến một ý tưởng cầu hôn táo bạo — hãy kể cho Solène nghe.</p>
+        <p class="small"><a class="link-inline" href="/chinh-sach/cau-hoi-thuong-gap/">Xem câu hỏi thường gặp</a></p>
+      </div>
+      <form class="form-grid form-grid--2 contact-form" data-contact-form novalidate>
+        <div class="field"><label for="ct-name">Họ tên <span class="req">*</span></label><input class="input" id="ct-name" name="name" required autocomplete="name" /><span class="field-error" data-error-for="name"></span></div>
+        <div class="field"><label for="ct-phone">Điện thoại</label><input class="input" id="ct-phone" name="phone" type="tel" autocomplete="tel" /><span class="field-error" data-error-for="phone"></span></div>
+        <div class="field span-2"><label for="ct-email">Email <span class="req">*</span></label><input class="input" id="ct-email" name="email" type="email" required autocomplete="email" /><span class="field-error" data-error-for="email"></span></div>
+        <div class="field span-2"><label for="ct-topic">Chủ đề</label><select class="select" id="ct-topic" name="topic"><option>Tư vấn sản phẩm</option><option>Thiết kế riêng</option><option>Đơn hàng & giao hàng</option><option>Bảo hành & sửa chữa</option><option>Hợp tác</option></select></div>
+        <div class="field span-2"><label for="ct-msg">Nội dung <span class="req">*</span></label><textarea class="textarea" id="ct-msg" name="message" required maxlength="1000"></textarea><span class="field-error" data-error-for="message"></span></div>
+        <div class="span-2"><button class="btn" type="submit">Gửi lời nhắn <Icon name="arrow-right" /></button></div>
+      </form>
+    </div>
+  </section>
+</Base>
+<script>
+  import { isEmail, isPhoneVN, read, write } from '../scripts/store';
+  import { qs, toast } from '../scripts/ui';
+  const form = qs<HTMLFormElement>('[data-contact-form]');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const v = (k: string) => String(fd.get(k) || '').trim();
+    const checks: [string, boolean, string][] = [['name', v('name').length > 1, 'Vui lòng nhập họ tên.'], ['email', isEmail(v('email')), 'Email không hợp lệ.'], ['phone', !v('phone') || isPhoneVN(v('phone')), 'Số điện thoại không hợp lệ.'], ['message', v('message').length >= 10, 'Nội dung tối thiểu 10 ký tự.']];
+    let ok = true;
+    for (const [k, pass, msg] of checks) {
+      form.querySelector(`[data-error-for="${k}"]`)!.textContent = pass ? '' : msg;
+      form.querySelector(`[name="${k}"]`)?.closest('.field')?.classList.toggle('has-error', !pass);
+      if (!pass) ok = false;
+    }
+    if (!ok) return;
+    const list = read<unknown[]>('messages', []);
+    list.unshift({ ...Object.fromEntries(fd), at: Date.now() });
+    write('messages', list);
+    form.reset();
+    toast({ title: 'Đã gửi lời nhắn', message: 'Cảm ơn bạn! Solène sẽ phản hồi trong vòng 2 giờ làm việc.', icon: 'mail' });
+  });
+</script>
+<style is:global>
+  .contact-quick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--c-line); border: 1px solid var(--c-line); }
+  @media (min-width: 900px) { .contact-quick { grid-template-columns: repeat(4, 1fr); } }
+  .contact-quick a { background: var(--c-bg); padding: 1.6rem 1.2rem; display: grid; gap: 0.3rem; justify-items: start; transition: background-color 0.3s; }
+  .contact-quick a:hover { background: var(--c-bg-2); }
+  .contact-quick svg { width: 24px; height: 24px; color: var(--c-gold-dark); margin-bottom: 0.4rem; }
+  .contact-quick b { font-family: var(--ff-serif); font-weight: 400; font-size: 1.25rem; }
+  .contact-quick span { font-size: var(--fs-xs); color: var(--c-muted); word-break: break-word; }
+  .stores { display: grid; gap: 3rem; }
+  @media (min-width: 900px) { .stores { grid-template-columns: 1fr 1fr; } }
+  .store { display: grid; gap: 1.4rem; }
+  @media (min-width: 560px) { .store { grid-template-columns: 0.8fr 1fr; align-items: center; } }
+  .store h2 { font-size: 1.7rem; }
+  .store__info { display: grid; gap: 0.7rem; font-size: var(--fs-sm); margin-bottom: 1.4rem; }
+  .store__info li { display: flex; gap: 0.6rem; }
+  .store__info svg { width: 16px; height: 16px; color: var(--c-gold-dark); flex: none; margin-top: 4px; }
+  .store__actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .contact-grid { display: grid; gap: 2.5rem; }
+  @media (min-width: 900px) { .contact-grid { grid-template-columns: 0.8fr 1.2fr; gap: 5rem; } }
+</style>

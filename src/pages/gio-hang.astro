@@ -1,0 +1,75 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Giỏ hàng' }];
+---
+<Base title="Giỏ hàng" description="Giỏ hàng của bạn tại Solène Fine Jewelry." noindex>
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+  <section class="container cartpage" data-cartpage>
+    <header class="cartpage__head">
+      <h1>Giỏ hàng <em data-cp-count></em></h1>
+      <ol class="checkout-steps" role="list"><li class="is-active">Giỏ hàng</li><li>Thông tin</li><li>Hoàn tất</li></ol>
+    </header>
+
+    <div class="cartpage__grid" data-cp-filled hidden>
+      <div>
+        <div class="cartpage__list" data-cp-list></div>
+        <div class="gift-note">
+          <label class="check"><input type="checkbox" data-gift-toggle /><span class="box"></span><span><b>Gửi kèm thiệp viết tay</b> — miễn phí, nghệ nhân thư pháp của Solène sẽ viết giúp bạn</span></label>
+          <textarea class="textarea" data-gift-note maxlength="200" placeholder="Lời nhắn của bạn (tối đa 200 ký tự)" hidden></textarea>
+        </div>
+        <a class="link" href="/cua-hang/" style="margin-top:1.4rem"><Icon name="arrow-left" />Tiếp tục mua sắm</a>
+      </div>
+      <aside class="summary" aria-labelledby="sum-title">
+        <h2 id="sum-title" class="summary__title">Tóm tắt đơn hàng</h2>
+        <form class="promo" data-promo-form novalidate>
+          <label for="promo" class="sr-only">Mã ưu đãi</label>
+          <input class="input" id="promo" name="code" placeholder="Mã ưu đãi" autocomplete="off" />
+          <button class="btn btn--outline btn--sm" type="submit">Áp dụng</button>
+        </form>
+        <p class="promo__msg tiny" data-promo-msg></p>
+        <div class="totals" data-cp-totals></div>
+        <a class="btn btn--block" href="/thanh-toan/" style="margin-top:1.4rem"><Icon name="lock" />Tiến hành thanh toán</a>
+        <ul class="summary__trust" role="list">
+          <li><Icon name="shield" />Thanh toán bảo mật · hóa đơn VAT</li>
+          <li><Icon name="truck" />Giao miễn phí, bảo hiểm 100% giá trị</li>
+          <li><Icon name="refresh" />Đổi mẫu 15 ngày · bảo hành trọn đời</li>
+        </ul>
+        <div class="pay-row" aria-label="Phương thức thanh toán"><span>VISA</span><span>MASTERCARD</span><span>JCB</span><span>NAPAS</span><span>COD</span></div>
+      </aside>
+    </div>
+
+    <div class="empty-state cartpage__empty" data-cp-empty hidden>
+      <Icon name="bag" />
+      <h2>Giỏ hàng của bạn đang trống</h2>
+      <p class="muted">Khám phá những thiết kế được yêu thích nhất hoặc tự thiết kế chiếc nhẫn của riêng bạn.</p>
+      <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.6rem"><a class="btn" href="/cua-hang/?sap-xep=ban-chay">Xem sản phẩm bán chạy</a><a class="btn btn--outline" href="/thiet-ke-nhan/"><Icon name="sparkle" />Thiết kế nhẫn</a></div>
+    </div>
+  </section>
+
+  <section class="section section--cream" data-cp-suggest hidden>
+    <div class="container">
+      <div class="section-head"><div><p class="eyebrow eyebrow--line">Hoàn thiện món quà</p><h2>Có thể bạn <em>cũng thích</em></h2></div></div>
+      <div class="product-grid product-grid--4" data-cp-suggest-grid></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { initCartPage } from '../scripts/pages/cart-page';
+  initCartPage();
+</script>
+
+<style is:global>
+  .cartpage { padding-bottom: var(--section); }
+  .cartpage__grid { display: grid; gap: 2.5rem; align-items: start; }
+  @media (min-width: 1000px) { .cartpage__grid { grid-template-columns: 1fr 400px; gap: 4rem; } }
+  .cartpage__list .citem { grid-template-columns: 120px 1fr; gap: 1.4rem; padding: 1.5rem 0; }
+  .cartpage__list .citem__img { width: 120px; }
+  .cartpage__list .citem__name { font-size: 1.3rem; }
+  .cartpage__list .citem__opts { font-size: var(--fs-sm); }
+  @media (max-width: 560px) { .cartpage__list .citem { grid-template-columns: 90px 1fr; gap: 1rem; } .cartpage__list .citem__img { width: 90px; } .cartpage__list .citem__name { font-size: 1.1rem; } }
+  .gift-note { margin-top: 1.6rem; padding: 1.2rem 1.3rem; background: var(--g-satin); border: 1px solid var(--c-line); display: grid; gap: 0.9rem; }
+  .cartpage__empty { padding: 4rem 1rem 2rem; }
+</style>

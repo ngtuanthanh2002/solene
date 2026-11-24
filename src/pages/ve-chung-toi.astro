@@ -1,0 +1,103 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE } from '../config';
+import { breadcrumbLd } from '../lib/seo';
+const crumbs = [{ label: 'Trang chủ', href: '/' }, { label: 'Về Solène' }];
+const timeline = [
+  { y: '1998', t: 'Xưởng kim hoàn nhỏ trên phố Đồng Khởi', d: 'Nghệ nhân Trần Hạo mở xưởng chế tác với ba người thợ, chuyên nhẫn cưới đặt riêng cho các cặp đôi Sài Gòn.' },
+  { y: '2008', t: 'Kim cương kiểm định GIA', d: 'Solène trở thành một trong những nhà kim hoàn đầu tiên tại Việt Nam cam kết 100% viên chủ có giấy GIA.' },
+  { y: '2016', t: 'Maison Hà Nội', d: 'Khai trương showroom thứ hai trên phố Tràng Tiền cùng phòng hẹn riêng dành cho các cặp đôi.' },
+  { y: '2026', t: 'Silk Veil & Atelier số', d: 'Ra mắt bộ sưu tập Signature Silk Veil và công cụ thiết kế nhẫn trực tuyến — mang xưởng chế tác đến gần hơn với bạn.' },
+];
+const values = [
+  { i: 'gem', t: 'Kim cương có nguồn gốc', d: 'Chỉ sử dụng kim cương thiên nhiên tuân thủ Quy trình Kimberley, kèm giấy kiểm định GIA.' },
+  { i: 'pen', t: 'Chế tác thủ công', d: '120 nghệ nhân, mỗi chiếc nhẫn đi qua tay bốn người thợ cho đến lớp đánh bóng cuối cùng.' },
+  { i: 'shield', t: 'Đồng hành trọn đời', d: 'Bảo hành, làm sạch và siết chấu miễn phí — trang sức của bạn luôn rạng rỡ như ngày đầu.' },
+  { i: 'leaf', t: 'Vàng tái chế', d: '70% vàng sử dụng tại xưởng là vàng tái chế được tinh luyện lại đạt chuẩn Au750.' },
+];
+---
+<Base title="Về Solène — câu chuyện thương hiệu" description="Solène Fine Jewelry: từ xưởng kim hoàn nhỏ trên phố Đồng Khởi năm 1998 đến nhà chế tác nhẫn cưới và trang sức kim cương được hơn 52.000 cặp đôi tin chọn." image="/images/og/ed-satin-hand.jpg" jsonld={breadcrumbLd(crumbs, Astro.site!)}>
+  <PageHero banner="ed-jeweler-loupe" eyebrow="Maison de Joaillerie · 1998" title="Câu chuyện <em>Solène</em>" intro="Hơn hai mươi lăm năm gìn giữ những lời hứa bằng vàng và kim cương." alt="Nghệ nhân Solène kiểm tra viên kim cương bằng kính lúp" />
+  <div class="container"><Breadcrumbs items={crumbs} /></div>
+
+  <section class="section about-intro">
+    <div class="container--narrow center" data-reveal>
+      <p class="eyebrow">Solène /sɔ.lɛn/</p>
+      <p class="about-quote serif">“Chúng tôi không chỉ làm ra những chiếc nhẫn. Chúng tôi chế tác <em>những lời hứa</em> — để chúng được đeo mỗi ngày, trọn một đời.”</p>
+      <p class="script about-sign">Trần Hạo</p>
+      <p class="tiny muted caps">Nhà sáng lập · Nghệ nhân kim hoàn</p>
+    </div>
+  </section>
+
+  <section class="section section--cream" id="xuong-che-tac">
+    <div class="container about-split">
+      <div class="about-split__imgs" data-reveal>
+        <div class="ratio ratio--45"><Img k="ed-setting-stone" alt="Nghệ nhân gắn đá thủ công" sizes="(min-width: 900px) 24vw, 45vw" /></div>
+        <div class="ratio ratio--45"><Img k="ed-workbench" alt="Nghệ nhân làm việc tại bàn chế tác" sizes="(min-width: 900px) 24vw, 45vw" /></div>
+      </div>
+      <div data-reveal style="--d:.12s">
+        <p class="eyebrow eyebrow--line">Xưởng chế tác</p>
+        <h2>Nơi vàng được <em>thổi hồn</em></h2>
+        <p class="lead">Tại xưởng Solène ở Sài Gòn, mỗi thiết kế bắt đầu bằng bản vẽ màu nước, được dựng mô hình 3D chính xác tới 0.01 mm, đúc bằng vàng 18K rồi hoàn thiện hoàn toàn bằng tay.</p>
+        <p>Những viên kim cương được gắn dưới kính hiển vi; chấu nhẫn được mài tròn để không vướng tóc hay sợi vải. Trước khi rời xưởng, mỗi sản phẩm trải qua 21 bước kiểm tra chất lượng.</p>
+        <dl class="stats about-stats">
+          <div><dt>Năm kinh nghiệm</dt><dd>{new Date().getFullYear() - SITE.founded}</dd></div>
+          <div><dt>Nghệ nhân</dt><dd>120</dd></div>
+          <div><dt>Bước kiểm tra</dt><dd>21</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center" data-reveal><p class="eyebrow">Hành trình</p><h2>Từ xưởng nhỏ <em>đến Maison</em></h2></div>
+      <ol class="tl" role="list" data-stagger="0.1">
+        {timeline.map((t) => <li data-reveal><span class="tl__y">{t.y}</span><h3>{t.t}</h3><p class="small muted">{t.d}</p></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--dark">
+    <div class="container">
+      <div class="section-head" data-reveal><div><p class="eyebrow eyebrow--line">Cam kết</p><h2>Những giá trị <em>không thay đổi</em></h2></div></div>
+      <div class="values" data-stagger="0.08">
+        {values.map((v) => <div class="value" data-reveal><Icon name={v.i} /><h3>{v.t}</h3><p>{v.d}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section center">
+    <div class="container--narrow" data-reveal>
+      <h2>Ghé thăm <em>Maison Solène</em></h2>
+      <p class="lead">Hai showroom tại Sài Gòn và Hà Nội luôn chào đón bạn — hãy đặt lịch để có trải nghiệm riêng tư nhất.</p>
+      <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.6rem"><a class="btn" href="/dat-lich-hen/"><Icon name="calendar" />Đặt lịch hẹn</a><a class="btn btn--outline" href="/lien-he/">Hệ thống showroom</a></div>
+    </div>
+  </section>
+</Base>
+<style is:global>
+  .about-quote { font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.6rem); line-height: 1.35; font-weight: 300; margin: 0 0 1.4rem; }
+  .about-sign { font-size: 2.6rem; color: var(--c-gold-dark); margin: 0; }
+  .about-split { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 900px) { .about-split { grid-template-columns: 1fr 1fr; gap: 5rem; } }
+  .about-split__imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .about-split__imgs > :last-child { margin-top: 3.5rem; }
+  .about-stats { grid-template-columns: repeat(3, 1fr) !important; margin-top: 2rem; padding-top: 2rem; }
+  .tl { list-style: none; display: grid; gap: 2rem; }
+  @media (min-width: 900px) { .tl { grid-template-columns: repeat(4, 1fr); } }
+  .tl li { position: relative; padding-top: 1.6rem; border-top: 1px solid var(--c-line-2); }
+  .tl li::before { content: ''; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--c-gold); }
+  .tl__y { font-family: var(--ff-serif); font-size: 2.2rem; color: var(--c-gold-dark); font-weight: 300; }
+  .tl h3 { font-size: 1.25rem; margin: 0.4rem 0 0.5rem; }
+  .values { display: grid; gap: 1px; background: rgba(255, 255, 255, 0.1); grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .values { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1100px) { .values { grid-template-columns: repeat(4, 1fr); } }
+  .value { background: var(--c-dark); padding: 2rem 1.6rem; }
+  .value svg { width: 28px; height: 28px; color: var(--c-gold-2); margin-bottom: 1rem; }
+  .value h3 { font-size: 1.3rem; }
+  .value p { color: #a3a3a3; font-size: var(--fs-sm); margin: 0; }
+</style>

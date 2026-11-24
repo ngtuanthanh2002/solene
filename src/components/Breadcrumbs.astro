@@ -1,0 +1,12 @@
+---
+import type { Crumb } from '../lib/seo';
+interface Props { items: Crumb[]; class?: string }
+const { items, class: cls = '' } = Astro.props;
+---
+<nav class:list={['breadcrumbs', cls]} aria-label="Đường dẫn">
+  <ol>
+    {items.map((c, i) => (
+      <li>{c.href && i < items.length - 1 ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>
+    ))}
+  </ol>
+</nav>
