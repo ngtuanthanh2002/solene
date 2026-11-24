@@ -29,6 +29,8 @@
   --ff-display: var(--ff-sans);
   --ff-serif: var(--ff-display);
   --ff-script: var(--ff-sans);
+  /* Chữ trình diễn cho hero banner — rộng, hiện đại */
+  --ff-hero: 'Zalando Sans Expanded', var(--ff-sans);
 
   --fs-hero: clamp(2.1rem, 1.2rem + 3vw, 3.9rem);
   --fs-1: clamp(1.85rem, 1.35rem + 1.6vw, 2.75rem);

@@ -50,6 +50,7 @@ const webLd = {
 ---
 <Base description={SITE.description} jsonld={[orgLd, webLd]} transparentHeader bodyClass="page-home">
   <link slot="head" rel="preload" as="image" href="/images/hero/hero-1920.webp" imagesrcset="/images/hero/hero-960.webp 960w, /images/hero/hero-1280.webp 1280w, /images/hero/hero-1920.webp 1920w" imagesizes="100vw" media="(min-width: 761px)" fetchpriority="high" />
+  <link slot="head" rel="preload" href="/fonts/zalando-sans-expanded-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link slot="head" rel="preload" as="image" href="/images/hero/hero-sq-900.webp" imagesrcset="/images/hero/hero-sq-600.webp 600w, /images/hero/hero-sq-900.webp 900w" imagesizes="100vw" media="(max-width: 760px)" fetchpriority="high" />
 
   <!-- ═════════ HERO ═════════ -->
@@ -60,9 +61,11 @@ const webLd = {
     </picture>
     <div class="hero__content container">
       <div class="hero__text">
-        <p class="eyebrow hero-in" style="--i:0">Bộ sưu tập Silk Veil</p>
-        <h1 class="hero__title hero-in" id="hero-title" style="--i:1">Lời hứa trọn một đời</h1>
-        <p class="hero__lead hero-in" style="--i:2">Nhẫn cầu hôn kim cương GIA, chế tác thủ công theo ni tay của bạn.</p>
+        <p class="hero__label hero-in" style="--i:0">Bộ sưu tập mới · 2026</p>
+        <h1 class="hero__title" id="hero-title">
+          <span class="hero__name">Silk Veil</span>
+          <span class="hero__tagline hero-in" style="--i:2">Lời hứa trọn một đời</span>
+        </h1>
         <div class="hero__ctas hero-in" style="--i:3">
           <a class="btn" href="/bo-suu-tap/silk-veil/">Khám phá bộ sưu tập</a>
           <a class="link" href="/thiet-ke-nhan/">Thiết kế nhẫn riêng</a>
@@ -209,11 +212,19 @@ const webLd = {
   .hero__media { position: absolute; inset: 0; z-index: -1; }
   .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%; }
   .hero__content { padding-top: calc(var(--header-h) + 2rem); padding-bottom: 4rem; }
-  .hero__text { max-width: 620px; }
-  .hero__title { font-size: var(--fs-hero); font-weight: 300; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 1.1rem; text-wrap: balance; }
-  .hero__lead { font-size: 0.98rem; color: var(--c-ink-2); max-width: 38ch; margin-bottom: 2.25rem; }
+  .hero__text { max-width: 680px; }
+  .hero__label { font-family: var(--ff-hero); font-size: 0.66rem; font-weight: 400; letter-spacing: 0.22em; text-transform: uppercase; color: var(--c-muted); margin: 0 0 clamp(1.25rem, 2vw, 1.75rem); }
+  .hero__title { margin: 0 0 clamp(2rem, 3.2vw, 2.75rem); font-size: inherit; line-height: 1; letter-spacing: 0; text-wrap: initial; }
+  /* Tên bộ sưu tập: chữ trình diễn bè ngang (Zalando Sans Expanded), in hoa, nét mảnh — thu khoảng chữ khi xuất hiện */
+  .hero__name {
+    display: block; margin-right: -0.06em;
+    font-family: var(--ff-hero); font-size: clamp(2.6rem, 0.6rem + 6vw, 6.6rem); font-weight: 200; line-height: 0.95; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+    opacity: 0; animation: heroName 1.8s var(--ease-out) 0.25s forwards;
+  }
+  @keyframes heroName { from { opacity: 0; letter-spacing: 0.16em; } to { opacity: 1; letter-spacing: 0.06em; } }
+  .hero__tagline { display: block; margin-top: clamp(1.1rem, 1.6vw, 1.5rem); font-family: var(--ff-hero); font-size: clamp(1rem, 0.88rem + 0.45vw, 1.3rem); font-weight: 300; line-height: 1.4; letter-spacing: 0.01em; color: var(--c-ink-2); }
   .hero__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 2rem; }
-  .hero-in { opacity: 0; transform: translateY(10px); animation: fadeUp 1.1s var(--ease-out) forwards; animation-delay: calc(0.15s + var(--i) * 0.12s); }
+  .hero-in { opacity: 0; transform: translateY(10px); animation: fadeUp 1.1s var(--ease-out) forwards; animation-delay: calc(0.3s + var(--i) * 0.15s); }
   @media (min-width: 761px) and (max-width: 1099px) {
     .page-home .hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.3) 55%, rgba(255, 255, 255, 0) 80%); }
   }
@@ -223,8 +234,9 @@ const webLd = {
     .hero__media img { object-position: 50% 50%; }
     .hero__content { padding: 2.25rem var(--gutter) 1rem; width: 100%; text-align: center; }
     .hero__text { margin-inline: auto; }
-    .hero__title { font-size: clamp(2rem, 8.5vw, 2.6rem); }
-    .hero__lead { margin-inline: auto; margin-bottom: 1.75rem; }
+    .hero__title { margin-bottom: 1.9rem; }
+    .hero__name { font-size: clamp(2.3rem, 11.5vw, 3.6rem); }
+    .hero__label { margin-bottom: 1rem; }
     .hero__ctas { justify-content: center; }
     .hero__ctas .btn { flex: 1 1 100%; }
   }

@@ -70,7 +70,7 @@ Toàn bộ dữ liệu người dùng lưu trên trình duyệt (`localStorage`,
 
 ## 5. Font & hình ảnh
 
-- Font tự host trong `public/fonts/` (không phụ thuộc Google Fonts), đầy đủ subset **tiếng Việt**: một họ chữ không chân hiện đại **Manrope** (variable, dùng cho cả tiêu đề lẫn nội dung). Giấy phép SIL OFL 1.1 — xem `public/fonts/licenses/`.
+- Font tự host trong `public/fonts/` (không phụ thuộc Google Fonts), đầy đủ subset **tiếng Việt**: họ chữ không chân hiện đại **Manrope** (variable, dùng cho tiêu đề lẫn nội dung) và **Zalando Sans Expanded** (variable, chữ trình diễn ở hero banner). Giấy phép SIL OFL 1.1 — xem `public/fonts/licenses/`.
 - Ảnh từ Unsplash (giấy phép miễn phí) — danh sách tác giả trong `IMAGE_CREDITS.md`. Ảnh hero từ `hero_banner.png`.
 
 ## 6. Cấu trúc
